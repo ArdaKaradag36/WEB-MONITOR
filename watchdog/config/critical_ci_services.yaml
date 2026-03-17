@@ -1,0 +1,14 @@
+services:
+  # Örnek kritik kamu/dijital hizmet domainleri.
+  # CI modu, URL’leri shard parametresinden arındırıp bu listeye göre filtreler.
+  - https://www.meb.gov.tr
+  - https://www.sgk.gov.tr
+  - https://www.gib.gov.tr
+  - https://www.nvi.gov.tr
+  - https://www.osym.gov.tr
+  - https://www.mfa.gov.tr
+  - https://www.icisleri.gov.tr
+  - https://www.uab.gov.tr
+  - https://www.tbmm.gov.tr
+  - https://www.tccb.gov.tr
+

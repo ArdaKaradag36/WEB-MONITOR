@@ -1,0 +1,1385 @@
+targets:
+  # Kamu kurumları, bakanlıklar, valilikler, üniversiteler ve diğer kritik kurumlar.
+  # Basit GET kontrolleri, makul timeout ve latency eşiği ile tanımlanmıştır.
+
+  # --- Kamu Kurumları ve Bakanlıklar ---
+  - name: "Cumhurbaskanligi"
+    url: "https://www.tccb.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "TBMM"
+    url: "https://www.tbmm.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Anayasa Mahkemesi"
+    url: "https://www.anayasa.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Yargitay"
+    url: "https://www.yargitay.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Danistay"
+    url: "https://www.danistay.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Sayistay"
+    url: "https://www.sayistay.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Icisleri Bakanligi"
+    url: "https://www.icisleri.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Adalet Bakanligi"
+    url: "https://www.adalet.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Disisleri Bakanligi"
+    url: "https://www.mfa.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Hazine ve Maliye Bakanligi"
+    url: "https://www.hmb.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Milli Egitim Bakanligi"
+    url: "https://www.meb.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Milli Savunma Bakanligi"
+    url: "https://www.msb.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Saglik Bakanligi"
+    url: "https://www.saglik.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Ulastirma ve Altyapi Bakanligi"
+    url: "https://www.uab.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Tarim ve Orman Bakanligi"
+    url: "https://www.tarimorman.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Sanayi ve Teknoloji Bakanligi"
+    url: "https://www.sanayi.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Ticaret Bakanligi"
+    url: "https://www.ticaret.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Enerji ve Tabii Kaynaklar"
+    url: "https://www.enerji.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Kultur ve Turizm Bakanligi"
+    url: "https://www.ktb.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Cevre, Sehircilik ve Iklim Degisikligi"
+    url: "https://www.csb.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Aile ve Sosyal Hizmetler"
+    url: "https://www.aile.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Calisma ve Sosyal Guvenlik"
+    url: "https://www.calisma.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Genclik ve Spor Bakanligi"
+    url: "https://www.genclikspor.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "MGK Genel Sekreterligi"
+    url: "https://www.mgk.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Diyanet Isleri Baskanligi"
+    url: "https://www.diyanet.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Savunma Sanayii Baskanligi"
+    url: "https://www.savunmasanayii.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Iletisim Baskanligi"
+    url: "https://www.iletisim.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "TCMB"
+    url: "https://www.tcmb.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "SPK"
+    url: "https://www.spk.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "BDDK"
+    url: "https://www.bddk.org.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "TSE"
+    url: "https://www.tse.org.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "TUBITAK"
+    url: "https://www.tubitak.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "TUIK"
+    url: "https://www.tuik.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "TRT Haber"
+    url: "https://www.trthaber.com"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Anadolu Ajansi"
+    url: "https://www.aa.com.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "RTUK"
+    url: "https://www.rtuk.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "BTK"
+    url: "https://www.btk.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Kamu Ihale Kurumu"
+    url: "https://www.kik.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  # --- Valilikler (örnekler) ---
+  - name: "Adana Valiligi"
+    url: "https://www.adana.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Ankara Valiligi"
+    url: "https://www.ankara.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Istanbul Valiligi"
+    url: "https://www.istanbul.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Izmir Valiligi"
+    url: "https://www.izmir.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Bursa Valiligi"
+    url: "https://www.bursa.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  # --- Universiteler (ornekler) ---
+  - name: "Ankara Universitesi"
+    url: "https://www.ankara.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Istanbul Universitesi"
+    url: "https://www.istanbul.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Hacettepe Universitesi"
+    url: "https://www.hacettepe.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "ODTU"
+    url: "https://www.odtu.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Bogazici Universitesi"
+    url: "https://www.boun.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  # --- Diger onemli kamu baglantilari (ornekler) ---
+  - name: "ISKUR"
+    url: "https://www.iskur.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "SGK"
+    url: "https://www.sgk.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "GIB"
+    url: "https://www.gib.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "NVI"
+    url: "https://www.nvi.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "AFAD"
+    url: "https://www.afad.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  # --- Ek Valilikler ---
+  - name: "Adiyaman Valiligi"
+    url: "https://www.adiyaman.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Afyonkarahisar Valiligi"
+    url: "https://www.afyonkarahisar.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Agri Valiligi"
+    url: "https://www.agri.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Amasya Valiligi"
+    url: "https://www.amasya.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Antalya Valiligi"
+    url: "https://www.antalya.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Artvin Valiligi"
+    url: "https://www.artvin.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Aydin Valiligi"
+    url: "https://www.aydin.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Balikesir Valiligi"
+    url: "https://www.balikesir.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Bilecik Valiligi"
+    url: "https://www.bilecik.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Bingol Valiligi"
+    url: "https://www.bingol.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Bitlis Valiligi"
+    url: "https://www.bitlis.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Bolu Valiligi"
+    url: "https://www.bolu.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Burdur Valiligi"
+    url: "https://www.burdur.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Canakkale Valiligi"
+    url: "https://www.canakkale.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Cankiri Valiligi"
+    url: "https://www.cankiri.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Corum Valiligi"
+    url: "https://www.corum.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Denizli Valiligi"
+    url: "https://www.denizli.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Diyarbakir Valiligi"
+    url: "https://www.diyarbakir.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Edirne Valiligi"
+    url: "https://www.edirne.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Elazig Valiligi"
+    url: "https://www.elazig.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Erzincan Valiligi"
+    url: "https://www.erzincan.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Erzurum Valiligi"
+    url: "https://www.erzurum.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Eskisehir Valiligi"
+    url: "https://www.eskisehir.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Gaziantep Valiligi"
+    url: "https://www.gaziantep.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Giresun Valiligi"
+    url: "https://www.giresun.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Gumushane Valiligi"
+    url: "https://www.gumushane.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Hakkari Valiligi"
+    url: "https://www.hakkari.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Hatay Valiligi"
+    url: "https://www.hatay.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Isparta Valiligi"
+    url: "https://www.isparta.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Mersin Valiligi"
+    url: "https://www.mersin.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Kars Valiligi"
+    url: "https://www.kars.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Kastamonu Valiligi"
+    url: "https://www.kastamonu.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Kayseri Valiligi"
+    url: "https://www.kayseri.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Kirklareli Valiligi"
+    url: "https://www.kirklareli.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Kirsehir Valiligi"
+    url: "https://www.kirsehir.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Kocaeli Valiligi"
+    url: "https://www.kocaeli.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Konya Valiligi"
+    url: "https://www.konya.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Kutahya Valiligi"
+    url: "https://www.kutahya.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Malatya Valiligi"
+    url: "https://www.malatya.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Manisa Valiligi"
+    url: "https://www.manisa.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Kahramanmaras Valiligi"
+    url: "https://www.kahramanmaras.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Mardin Valiligi"
+    url: "https://www.mardin.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Mugla Valiligi"
+    url: "https://www.mugla.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Mus Valiligi"
+    url: "https://www.mus.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Nevsehir Valiligi"
+    url: "https://www.nevsehir.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Nigde Valiligi"
+    url: "https://www.nigde.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Ordu Valiligi"
+    url: "https://www.ordu.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Rize Valiligi"
+    url: "https://www.rize.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Sakarya Valiligi"
+    url: "https://www.sakarya.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Samsun Valiligi"
+    url: "https://www.samsun.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Siirt Valiligi"
+    url: "https://www.siirt.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Sinop Valiligi"
+    url: "https://www.sinop.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Sivas Valiligi"
+    url: "https://www.sivas.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Tekirdag Valiligi"
+    url: "https://www.tekirdag.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  - name: "Tokat Valiligi"
+    url: "https://www.tokat.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 6000
+
+  # --- Ek Universiteler ---
+  - name: "ITU"
+    url: "https://www.itue.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Ege Universitesi"
+    url: "https://www.ege.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "DEU"
+    url: "https://www.deu.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Gazi Universitesi"
+    url: "https://www.gazi.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Marmara Universitesi"
+    url: "https://www.marmara.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Yildiz Teknik Universitesi"
+    url: "https://www.yildiz.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Anadolu Universitesi"
+    url: "https://www.anadolu.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Akdeniz Universitesi"
+    url: "https://www.akdeniz.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Cukurova Universitesi"
+    url: "https://www.cukurova.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Selcuk Universitesi"
+    url: "https://www.selcuk.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Ataturk Universitesi"
+    url: "https://www.atauni.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Erciyes Universitesi"
+    url: "https://www.erciyes.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Ondokuz Mayis Universitesi"
+    url: "https://www.omu.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Uludag Universitesi"
+    url: "https://www.uludag.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Karadeniz Teknik Universitesi"
+    url: "https://www.ktuni.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Pamukkale Universitesi"
+    url: "https://www.pau.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Osmangazi Universitesi"
+    url: "https://www.ogu.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Sakarya Universitesi"
+    url: "https://www.sakarya.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Kocaeli Universitesi"
+    url: "https://www.kocaeli.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Mugla Sitki Kocman Universitesi"
+    url: "https://www.mu.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Mersin Universitesi"
+    url: "https://www.mersin.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Trakya Universitesi"
+    url: "https://www.trakya.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Dicle Universitesi"
+    url: "https://www.dicle.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Firat Universitesi"
+    url: "https://www.firat.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Inonu Universitesi"
+    url: "https://www.inonu.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Cumhuriyet Universitesi"
+    url: "https://www.cumhuriyet.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Gaziantep Universitesi"
+    url: "https://www.gantep.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "YYU"
+    url: "https://www.yyu.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "KSU"
+    url: "https://www.ksu.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Harran Universitesi"
+    url: "https://www.harran.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "HRU"
+    url: "https://www.hruni.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "IBU"
+    url: "https://www.ibu.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Dumlupinar Universitesi"
+    url: "https://www.dumlupinar.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Adnan Menderes Universitesi"
+    url: "https://www.adu.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Mustafa Kemal Universitesi"
+    url: "https://www.mku.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Celal Bayar Universitesi"
+    url: "https://www.cbuni.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Namik Kemal Universitesi"
+    url: "https://www.nku.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  # --- Vakif Universiteleri (ornekler) ---
+  - name: "Istanbul Kultur Universitesi"
+    url: "https://www.iku.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Bilkent Universitesi"
+    url: "https://www.bilkent.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Sabanci Universitesi"
+    url: "https://www.sabanciuniv.edu"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Koc Universitesi"
+    url: "https://www.ku.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Ozyegin Universitesi"
+    url: "https://www.ozyegin.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Bilgi Universitesi"
+    url: "https://www.bilgi.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Yeditepe Universitesi"
+    url: "https://www.yeditepe.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Bahcesehir Universitesi"
+    url: "https://www.bahcesehir.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  # --- Diger onemli kamu baglantilari (tamamlama) ---
+  - name: "TKGM"
+    url: "https://www.tkgm.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "GOC Idaresi"
+    url: "https://www.goc.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "SHGM"
+    url: "https://www.shgm.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "KGM"
+    url: "https://www.kgm.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "DSI"
+    url: "https://www.dsi.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "OGM"
+    url: "https://www.ogm.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "MGM"
+    url: "https://www.mgm.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "VGM"
+    url: "https://www.vgm.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Darphane"
+    url: "https://www.darphane.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "TK Kurumu"
+    url: "https://www.tk.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "KVKK"
+    url: "https://www.kvkk.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "CIMER"
+    url: "https://www.cimer.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "YOK"
+    url: "https://www.yok.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "OSYM"
+    url: "https://www.osym.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Kredi Yurtlar (kredi.gov.tr)"
+    url: "https://www.kredi.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "KYK"
+    url: "https://www.kyk.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "MKE"
+    url: "https://www.mke.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Aselsan"
+    url: "https://www.aselsan.com.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "TAI"
+    url: "https://www.tai.com.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Roketsan"
+    url: "https://www.roketsan.com.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Havelsan"
+    url: "https://www.havelsan.com.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "TUSAS"
+    url: "https://www.tusas.com.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "TEIAS"
+    url: "https://www.teias.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "EUAS"
+    url: "https://www.euas.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "BOTAS"
+    url: "https://www.botas.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "TPAO"
+    url: "https://www.tpao.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "TKI"
+    url: "https://www.tki.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Eti Maden"
+    url: "https://www.eti-maden.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "MTA"
+    url: "https://www.mta.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "PTT"
+    url: "https://www.ptt.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "TCDD"
+    url: "https://www.tcdd.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "THY"
+    url: "https://www.thy.com"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "DHMI"
+    url: "https://www.dhmi.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Kiyi Emniyeti"
+    url: "https://www.kıyıemniyeti.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "TDI"
+    url: "https://www.tdi.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "DZKK"
+    url: "https://www.dzkk.tsk.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "KKK"
+    url: "https://www.kkk.tsk.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "HVKK"
+    url: "https://www.hvkk.tsk.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Jandarma Genel Komutanligi"
+    url: "https://www.jandarma.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Sahil Guvenlik"
+    url: "https://www.sahilguvenlik.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "EGM"
+    url: "https://www.egm.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Polis Akademisi"
+    url: "https://www.pa.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+  - name: "Jandarma ve Sahil Guvenlik Akademisi"
+    url: "https://www.jsga.edu.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    latency_threshold_ms: 5000
+
+

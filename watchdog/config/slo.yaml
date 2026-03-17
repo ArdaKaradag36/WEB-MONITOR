@@ -1,0 +1,16 @@
+services:
+  - name: "tccb"
+    url_contains: "tccb.gov.tr"
+    target_uptime_percent: 99.0
+    target_p95_ms: 5000
+
+  - name: "edevlet"
+    url_contains: "turkiye.gov.tr"
+    target_uptime_percent: 99.5
+    target_p95_ms: 4000
+
+  - name: "tbmm"
+    url_contains: "tbmm.gov.tr"
+    target_uptime_percent: 99.0
+    target_p95_ms: 6000
+

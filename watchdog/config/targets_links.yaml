@@ -1,0 +1,19 @@
+targets:
+- name: Custom 1
+  url: https://www.google.com
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 2
+  url: https://www.turkiye.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 3
+  url: https://example.com/status
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000

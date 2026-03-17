@@ -1,0 +1,59 @@
+services:
+  watchdog-monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: watchdog-monitor
+    restart: unless-stopped
+    environment:
+      WATCHDOG_DB_PATH: /app/data/watchdog.db
+      # Expanded synthetic dataset (~800–1000 targets) for load testing
+      WATCHDOG_TARGETS_FILE: /app/config/targets_public_institutions_expanded.yaml
+      WATCHDOG_POLL_INTERVAL_SECONDS: 60
+      WATCHDOG_REQUEST_TIMEOUT_SECONDS: 5
+      WATCHDOG_MAX_CONCURRENT_REQUESTS: 50
+      WATCHDOG_MAX_RETRIES: 2
+      WATCHDOG_SLACK_WEBHOOK_URL: ${WATCHDOG_SLACK_WEBHOOK_URL:-}
+      WATCHDOG_CI_CRITICAL_SERVICES_FILE: /app/config/critical_ci_services.yaml
+      WATCHDOG_MAINTENANCE_WINDOWS_FILE: /app/config/maintenance_windows.yaml
+    volumes:
+      - watchdog-db:/app/data
+      - ./watchdog/config/targets_public_institutions_expanded.yaml:/app/config/targets_public_institutions_expanded.yaml:ro
+      - ./watchdog/config/critical_ci_services.yaml:/app/config/critical_ci_services.yaml:ro
+
+  watchdog-metrics:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: watchdog-metrics
+    restart: unless-stopped
+    environment:
+      WATCHDOG_DB_PATH: /app/data/watchdog.db
+      WATCHDOG_TARGETS_FILE: /app/config/targets_public_institutions_expanded.yaml
+      WATCHDOG_POLL_INTERVAL_SECONDS: 30
+      WATCHDOG_REQUEST_TIMEOUT_SECONDS: 10
+      WATCHDOG_MAX_CONCURRENT_REQUESTS: 100
+      WATCHDOG_MAX_RETRIES: 2
+      WATCHDOG_SLACK_WEBHOOK_URL: ${WATCHDOG_SLACK_WEBHOOK_URL:-}
+    volumes:
+      - watchdog-db:/app/data
+      - ./watchdog/config/targets_public_institutions_expanded.yaml:/app/config/targets_public_institutions_expanded.yaml:ro
+    command: ["python", "main.py", "--metrics-server", "--metrics-host", "0.0.0.0", "--metrics-port", "8000"]
+    expose:
+      - "8000"
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: watchdog-nginx
+    restart: unless-stopped
+    depends_on:
+      - watchdog-metrics
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/htpasswd:/etc/nginx/.htpasswd:ro
+
+volumes:
+  watchdog-db:
+

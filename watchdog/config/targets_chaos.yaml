@@ -1,0 +1,305 @@
+targets:
+  # 10 Healthy targets – fast, reliable, baseline latency
+  - name: "Healthy - Google"
+    url: "https://www.google.com"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 800
+
+  - name: "Healthy - Cloudflare"
+    url: "https://www.cloudflare.com"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 800
+
+  - name: "Healthy - GitHub"
+    url: "https://github.com"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 900
+
+  - name: "Healthy - Wikipedia"
+    url: "https://www.wikipedia.org"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 900
+
+  - name: "Healthy - Python"
+    url: "https://www.python.org"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 900
+
+  - name: "Healthy - StackOverflow"
+    url: "https://stackoverflow.com"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 900
+
+  - name: "Healthy - DuckDuckGo"
+    url: "https://duckduckgo.com"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 900
+
+  - name: "Healthy - Bing"
+    url: "https://www.bing.com"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 900
+
+  - name: "Healthy - Fastly"
+    url: "https://www.fastly.com"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 900
+
+  - name: "Healthy - Mozilla"
+    url: "https://www.mozilla.org"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 900
+
+  # 10 Slow / Tarpit targets – high latency to trigger backpressure & P95/P99
+  - name: "Slow - HTTPBin Delay 4s #1"
+    url: "https://httpbin.org/delay/4"
+    expected_status: 200
+    timeout: 10
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 2500
+
+  - name: "Slow - HTTPBin Delay 4s #2"
+    url: "https://httpbin.org/delay/4?case=2"
+    expected_status: 200
+    timeout: 10
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 2500
+
+  - name: "Slow - HTTPBin Delay 4s #3"
+    url: "https://httpbin.org/delay/4?case=3"
+    expected_status: 200
+    timeout: 10
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 2500
+
+  - name: "Slow - HTTPBin Delay 4s #4"
+    url: "https://httpbin.org/delay/4?case=4"
+    expected_status: 200
+    timeout: 10
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 2500
+
+  - name: "Slow - HTTPBin Delay 4s #5"
+    url: "https://httpbin.org/delay/4?case=5"
+    expected_status: 200
+    timeout: 10
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 2500
+
+  - name: "Slow - HTTPBin Delay 4s #6"
+    url: "https://httpbin.org/delay/4?case=6"
+    expected_status: 200
+    timeout: 10
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 2500
+
+  - name: "Slow - HTTPBin Delay 4s #7"
+    url: "https://httpbin.org/delay/4?case=7"
+    expected_status: 200
+    timeout: 10
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 2500
+
+  - name: "Slow - HTTPBin Delay 4s #8"
+    url: "https://httpbin.org/delay/4?case=8"
+    expected_status: 200
+    timeout: 10
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 2500
+
+  - name: "Slow - HTTPBin Delay 4s #9"
+    url: "https://httpbin.org/delay/4?case=9"
+    expected_status: 200
+    timeout: 10
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 2500
+
+  - name: "Slow - HTTPBin Delay 4s #10"
+    url: "https://httpbin.org/delay/4?case=10"
+    expected_status: 200
+    timeout: 10
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/ChaosTest/1.0"
+    latency_threshold_ms: 2500
+
+  # 10 Flaky targets – random 200/500/503 to exercise retries with jitter
+  - name: "Flaky - HTTPBin 200,500,503 #1"
+    url: "https://httpbin.org/status/200,500,503"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Flaky - HTTPBin 200,500 #2"
+    url: "https://httpbin.org/status/200,500"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Flaky - HTTPBin 200,503 #3"
+    url: "https://httpbin.org/status/200,503"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Flaky - HTTPBin 500,503 #4"
+    url: "https://httpbin.org/status/500,503"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Flaky - HTTPBin 200,400,500 #5"
+    url: "https://httpbin.org/status/200,400,500"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Flaky - HTTPBin 200,404,500 #6"
+    url: "https://httpbin.org/status/200,404,500"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Flaky - HTTPBin 200,500,502 #7"
+    url: "https://httpbin.org/status/200,500,502"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Flaky - HTTPBin 200,500,504 #8"
+    url: "https://httpbin.org/status/200,500,504"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Flaky - HTTPBin 200,500,501 #9"
+    url: "https://httpbin.org/status/200,500,501"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Flaky - HTTPBin 200,429,500 #10"
+    url: "https://httpbin.org/status/200,429,500"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  # 10 Blackhole targets – timeouts / DNS failures for circuit breaker + suppression
+  - name: "Blackhole - Nonroutable IP #1"
+    url: "http://10.255.255.1"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Blackhole - Nonroutable IP #2"
+    url: "http://10.255.255.2"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Blackhole - Nonroutable IP #3"
+    url: "http://10.255.255.3"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Blackhole - Nonroutable IP #4"
+    url: "http://10.255.255.4"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Blackhole - Nonroutable IP #5"
+    url: "http://10.255.255.5"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Blackhole - Nonroutable IP #6"
+    url: "http://10.255.255.6"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Blackhole - Nonroutable IP #7"
+    url: "http://10.255.255.7"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Blackhole - Nonroutable IP #8"
+    url: "http://10.255.255.8"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Blackhole - Nonroutable IP #9"
+    url: "http://10.255.255.9"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Blackhole - Bad Domain #10"
+    url: "http://nonexistent.blackhole.watchdog.test"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+

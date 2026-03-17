@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>WatchDog NOC Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #050810;
+      --bg-elevated: #101522;
+      --bg-elevated-soft: #151b2b;
+      --border-subtle: #222a3a;
+      --accent: #3b82f6;
+      --accent-soft: rgba(59, 130, 246, 0.16);
+      --accent-strong: rgba(59, 130, 246, 0.28);
+      --text: #e5e7eb;
+      --text-soft: #9ca3af;
+      --danger: #ef4444;
+      --danger-soft: rgba(239, 68, 68, 0.16);
+      --warn: #f59e0b;
+      --warn-soft: rgba(245, 158, 11, 0.16);
+      --success: #22c55e;
+      --success-soft: rgba(34, 197, 94, 0.16);
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-sm: 6px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #0b1120, #020617 55%, #000000);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title-pill {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-soft);
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .meta-pill {
+      font-size: 11px;
+      color: var(--text-soft);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.9);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
+    }
+
+    .meta-pill-bad {
+      border-color: rgba(239, 68, 68, 0.7);
+      color: var(--danger);
+    }
+
+    .meta-pill-bad .dot {
+      background: var(--danger);
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.25);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 2.2fr 1.1fr;
+      grid-template-rows: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .panel {
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.98));
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.8);
+      padding: 12px 12px 10px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-pill {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-soft);
+    }
+
+    .panel-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .small-label {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .filter-input {
+      min-width: 0;
+      font-size: 12px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+      outline: none;
+    }
+
+    .filter-input::placeholder {
+      color: #4b5563;
+    }
+
+    .refresh-info {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .scroll {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      border-radius: calc(var(--radius-lg) - 6px);
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85));
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: linear-gradient(to bottom, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.92));
+      backdrop-filter: blur(12px);
+    }
+
+    th, td {
+      padding: 6px 10px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-soft);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    tbody tr:nth-child(even) {
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    tbody tr:nth-child(odd) {
+      background: rgba(15, 23, 42, 0.5);
+    }
+
+    tbody tr:hover {
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    .url-cell {
+      max-width: 320px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mono {
+      font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .chip-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--success);
+    }
+
+    .chip-dot-warn {
+      background: var(--warn);
+    }
+
+    .chip-dot-danger {
+      background: var(--danger);
+    }
+
+    .tag-pass {
+      color: var(--success);
+      background: var(--success-soft);
+      border-color: rgba(34, 197, 94, 0.4);
+    }
+
+    .tag-fail {
+      color: var(--danger);
+      background: var(--danger-soft);
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 50px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: 1px solid transparent;
+    }
+
+    .status-good {
+      color: var(--success);
+      background: var(--success-soft);
+      border-color: rgba(34, 197, 94, 0.4);
+    }
+
+    .status-warn {
+      color: var(--warn);
+      background: var(--warn-soft);
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+
+    .status-bad {
+      color: var(--danger);
+      background: var(--danger-soft);
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .status-pill {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .status-pill-pass {
+      background: var(--success-soft);
+      border-color: rgba(34, 197, 94, 0.5);
+      color: var(--success);
+    }
+
+    .status-pill-fail {
+      background: var(--danger-soft);
+      border-color: rgba(239, 68, 68, 0.5);
+      color: var(--danger);
+    }
+
+    .status-pill-partial {
+      background: var(--warn-soft);
+      border-color: rgba(245, 158, 11, 0.5);
+      color: var(--warn);
+    }
+
+    .slo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .slo-card {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      padding: 10px 10px 8px;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.94));
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .slo-card.pass {
+      box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.3);
+    }
+
+    .slo-card.fail {
+      box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.4);
+    }
+
+    .slo-card.partial {
+      box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.45);
+    }
+
+    .slo-title-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .slo-service {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .slo-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4px 8px;
+      font-size: 11px;
+    }
+
+    .metric-label {
+      color: var(--text-soft);
+    }
+
+    .metric-value {
+      font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    .metric-ok {
+      color: var(--success);
+    }
+
+    .metric-bad {
+      color: var(--danger);
+    }
+
+    .empty-state, .error-state {
+      font-size: 12px;
+      color: var(--text-soft);
+      padding: 10px 12px;
+    }
+
+    .error-state {
+      color: var(--danger);
+    }
+
+    .small {
+      font-size: 11px;
+    }
+
+    .incidents-panel {
+      grid-column: 1 / span 2;
+    }
+
+    .badge-count {
+      background: rgba(15, 23, 42, 0.9);
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .time-ago {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .back-to-top {
+      position: fixed;
+      right: 20px;
+      bottom: 24px;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.9);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+      transform: translateY(8px);
+      z-index: 40;
+    }
+
+    .back-to-top.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .back-to-top:hover {
+      background: rgba(15, 23, 42, 1);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    footer {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--text-soft);
+      text-align: right;
+    }
+
+    @media (max-width: 960px) {
+      .layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+
+      .incidents-panel {
+        grid-column: auto;
+      }
+    }
+
+    @media (max-width: 640px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .meta {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="title-block">
+        <div class="title">
+          WatchDog
+          <span class="title-pill">Public NOC / SLO</span>
+        </div>
+        <div class="subtitle">
+          Kamu profili için son dakikalardaki durum, SLO ve incident görünürlüğü.
+        </div>
+      </div>
+      <div class="meta">
+        <div class="meta-pill">
+          <span class="dot"></span>
+          <span id="connection-status-label">API bağlı</span>
+        </div>
+        <div class="meta-pill" id="monitor-pill">
+          <span class="dot"></span>
+          <span id="monitor-status-label">Monitor bilinmiyor</span>
+        </div>
+        <div class="meta-pill">
+          <span id="last-refresh-label">İlk yükleme bekleniyor…</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <!-- Status table -->
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            NOC Status
+            <span class="badge-pill">/api/status (son 5 dk)</span>
+          </div>
+          <div class="panel-actions">
+            <span class="small-label">Filtre:</span>
+            <input
+              id="status-filter"
+              class="filter-input"
+              type="text"
+              placeholder="URL içinde ara…"
+            />
+          </div>
+        </div>
+        <div class="scroll">
+          <div class="small" style="padding: 4px 10px 0; color: var(--text-soft);">
+            Son 5 dakikalık monitor özetidir; monitor durursa birkaç dakika içinde tablo boşalır.
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>URL</th>
+                <th>Uptime</th>
+                <th>P95</th>
+                <th>P99</th>
+                <th>Avg</th>
+                <th>Checks</th>
+                <th>Last Error (UTC)</th>
+              </tr>
+            </thead>
+            <tbody id="status-tbody">
+              <tr>
+                <td colspan="7" class="empty-state">
+                  Yükleniyor…
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SLO cards -->
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            SLO Özet
+            <span class="badge-pill">/api/slo</span>
+          </div>
+          <div class="panel-actions">
+            <span id="slo-count-badge" class="badge-count">0 hizmet</span>
+          </div>
+        </div>
+        <div class="scroll">
+          <div id="slo-container" class="slo-grid">
+            <div class="empty-state">
+              Yükleniyor…
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Incidents -->
+      <section class="panel incidents-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            Incident Geçmişi
+            <span class="badge-pill">/api/incidents (24 saat)</span>
+          </div>
+          <div class="panel-actions">
+            <span id="incidents-count-badge" class="badge-count">0 incident</span>
+          </div>
+        </div>
+        <div class="scroll">
+          <div class="small" style="padding: 4px 10px 0; color: var(--text-soft);">
+            Son 24 saatteki kesintiler; en yeni incident'lar üstte listelenir.
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>URL</th>
+                <th>Başlangıç</th>
+                <th>Bitiş</th>
+                <th>Down Checks</th>
+                <th>Süre</th>
+              </tr>
+            </thead>
+            <tbody id="incidents-tbody">
+              <tr>
+                <td colspan="5" class="empty-state">
+                  Yükleniyor…
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+    <footer>
+      Arda Karadağ &copy; 2026 – Tüm hakları saklıdır.
+    </footer>
+  </div>
+
+  <button id="back-to-top" class="back-to-top" aria-label="En üste dön">
+    ↑
+  </button>
+
+  <script>
+    const STATUS_TBODY = document.getElementById("status-tbody");
+    const INCIDENTS_TBODY = document.getElementById("incidents-tbody");
+    const SLO_CONTAINER = document.getElementById("slo-container");
+    const STATUS_FILTER = document.getElementById("status-filter");
+    const CONNECTION_LABEL = document.getElementById("connection-status-label");
+    const MONITOR_LABEL = document.getElementById("monitor-status-label");
+    const MONITOR_PILL = document.getElementById("monitor-pill");
+    const LAST_REFRESH_LABEL = document.getElementById("last-refresh-label");
+    const SLO_COUNT_BADGE = document.getElementById("slo-count-badge");
+    const INCIDENTS_COUNT_BADGE = document.getElementById("incidents-count-badge");
+    const BACK_TO_TOP = document.getElementById("back-to-top");
+
+    let lastStatusData = [];
+    let lastIncidentsData = [];
+    let lastSloData = [];
+
+    function classifyUptime(uptime) {
+      if (uptime == null || Number.isNaN(uptime)) return "bad";
+      if (uptime >= 99.5) return "good";
+      if (uptime >= 97.5) return "warn";
+      return "bad";
+    }
+
+    function formatMs(ms) {
+      if (ms == null || Number.isNaN(ms)) return "-";
+      return ms.toFixed(0) + " ms";
+    }
+
+    function formatPercent(p) {
+      if (p == null || Number.isNaN(p)) return "-";
+      return p.toFixed(2) + " %";
+    }
+
+    function formatDate(s) {
+      if (!s) return "-";
+      try {
+        const d = new Date(s);
+        if (Number.isNaN(d.getTime())) return s;
+        return d.toLocaleString("tr-TR", {
+          year: "2-digit",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+      } catch {
+        return s;
+      }
+    }
+
+    function formatDurationMs(startIso, endIso) {
+      if (!startIso) return "-";
+      const start = new Date(startIso);
+      const end = endIso ? new Date(endIso) : new Date();
+      if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return "-";
+      const ms = Math.max(0, end.getTime() - start.getTime());
+      const totalMinutes = Math.round(ms / 60000);
+      if (totalMinutes < 1) return "< 1 dk";
+      if (totalMinutes < 60) return totalMinutes + " dk";
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      if (hours < 24) return hours + " sa " + (minutes ? minutes + " dk" : "");
+      const days = Math.floor(hours / 24);
+      const remHours = hours % 24;
+      return days + " g " + (remHours ? remHours + " sa" : "");
+    }
+
+    function timeAgo(iso) {
+      if (!iso) return "-";
+      const t = new Date(iso);
+      if (Number.isNaN(t.getTime())) return "-";
+      const now = new Date();
+      const diffMs = now.getTime() - t.getTime();
+      const minutes = Math.round(diffMs / 60000);
+      if (minutes < 1) return "az önce";
+      if (minutes < 60) return minutes + " dk önce";
+      const hours = Math.round(minutes / 60);
+      if (hours < 24) return hours + " sa önce";
+      const days = Math.round(hours / 24);
+      return days + " g önce";
+    }
+
+    function updateStatusTable() {
+      const filterValue = STATUS_FILTER.value.trim().toLowerCase();
+      let data = filterValue
+        ? lastStatusData.filter((row) =>
+            row.url && row.url.toLowerCase().includes(filterValue)
+          )
+        : lastStatusData.slice();
+
+      // Önce en kötü uptime, sonra en yüksek p95 olacak şekilde sırala.
+      data.sort((a, b) => {
+        const ua = Number(a.uptime_percent);
+        const ub = Number(b.uptime_percent);
+        const safeUa = Number.isNaN(ua) ? 100 : ua;
+        const safeUb = Number.isNaN(ub) ? 100 : ub;
+        if (safeUa !== safeUb) {
+          return safeUa - safeUb; // düşük uptime önce
+        }
+
+        const p95a = Number(a.p95_ms);
+        const p95b = Number(b.p95_ms);
+        if (!Number.isNaN(p95a) && !Number.isNaN(p95b) && p95a !== p95b) {
+          return p95b - p95a; // daha yavaş p95 önce
+        }
+
+        // Son çare: URL alfabetik
+        return String(a.url || "").localeCompare(String(b.url || ""));
+      });
+
+      STATUS_TBODY.innerHTML = "";
+
+      if (!data.length) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 7;
+        td.className = "empty-state";
+        td.textContent = filterValue
+          ? "Filtreye uyan kayıt bulunamadı."
+          : "Son 5 dakika için kayıt yok. Monitor çalışmıyor olabilir veya profil değiştirilmiş olabilir.";
+        tr.appendChild(td);
+        STATUS_TBODY.appendChild(tr);
+        return;
+      }
+
+      for (const row of data) {
+        const uptime = Number(row.uptime_percent);
+        const cls = classifyUptime(uptime);
+
+        const tr = document.createElement("tr");
+
+        const urlTd = document.createElement("td");
+        urlTd.className = "url-cell mono";
+        urlTd.title = row.url || "";
+        urlTd.textContent = row.url || "-";
+
+        const uptimeTd = document.createElement("td");
+        const statusSpan = document.createElement("span");
+        statusSpan.className =
+          "status-badge " +
+          (cls === "good"
+            ? "status-good"
+            : cls === "warn"
+            ? "status-warn"
+            : "status-bad");
+        statusSpan.textContent = Number.isNaN(uptime) ? "-" : uptime.toFixed(2) + " %";
+        uptimeTd.appendChild(statusSpan);
+
+        const p95Td = document.createElement("td");
+        p95Td.textContent = formatMs(Number(row.p95_ms));
+
+        const p99Td = document.createElement("td");
+        p99Td.textContent = formatMs(Number(row.p99_ms));
+
+        const avgTd = document.createElement("td");
+        avgTd.textContent = formatMs(Number(row.avg_ms));
+
+        const checksTd = document.createElement("td");
+        checksTd.className = "mono";
+        checksTd.textContent = row.total_checks != null ? String(row.total_checks) : "-";
+
+        const lastErrorTd = document.createElement("td");
+        lastErrorTd.className = "small";
+        if (row.last_error_utc) {
+          lastErrorTd.textContent = formatDate(row.last_error_utc);
+          const spanAgo = document.createElement("span");
+          spanAgo.className = "time-ago";
+          spanAgo.textContent = " (" + timeAgo(row.last_error_utc) + ")";
+          lastErrorTd.appendChild(document.createTextNode(" "));
+          lastErrorTd.appendChild(spanAgo);
+        } else {
+          lastErrorTd.textContent = "-";
+        }
+
+        tr.appendChild(urlTd);
+        tr.appendChild(uptimeTd);
+        tr.appendChild(p95Td);
+        tr.appendChild(p99Td);
+        tr.appendChild(avgTd);
+        tr.appendChild(checksTd);
+        tr.appendChild(lastErrorTd);
+
+        STATUS_TBODY.appendChild(tr);
+      }
+    }
+
+    function updateIncidentsTable() {
+      INCIDENTS_TBODY.innerHTML = "";
+
+      if (!lastIncidentsData.length) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 5;
+        td.className = "empty-state";
+        td.textContent = "Son 24 saatte incident kaydı yok.";
+        tr.appendChild(td);
+        INCIDENTS_TBODY.appendChild(tr);
+        INCIDENTS_COUNT_BADGE.textContent = "0 incident";
+        return;
+      }
+
+      INCIDENTS_COUNT_BADGE.textContent =
+        lastIncidentsData.length + " incident";
+
+      // En yeni incident'lar üstte görünsün.
+      const sorted = lastIncidentsData.slice().sort((a, b) => {
+        const ta = new Date(a.started_at || 0).getTime();
+        const tb = new Date(b.started_at || 0).getTime();
+        return tb - ta;
+      });
+
+      for (const row of sorted) {
+        const tr = document.createElement("tr");
+
+        const urlTd = document.createElement("td");
+        urlTd.className = "url-cell mono";
+        urlTd.title = row.url || "";
+        urlTd.textContent = row.url || "-";
+
+        const startedTd = document.createElement("td");
+        startedTd.textContent = formatDate(row.started_at);
+
+        const endedTd = document.createElement("td");
+        endedTd.textContent = row.ended_at ? formatDate(row.ended_at) : "devam ediyor";
+
+        const downChecksTd = document.createElement("td");
+        downChecksTd.className = "mono";
+        downChecksTd.textContent =
+          row.down_checks != null ? String(row.down_checks) : "-";
+
+        const durTd = document.createElement("td");
+        durTd.textContent = formatDurationMs(row.started_at, row.ended_at);
+
+        tr.appendChild(urlTd);
+        tr.appendChild(startedTd);
+        tr.appendChild(endedTd);
+        tr.appendChild(downChecksTd);
+        tr.appendChild(durTd);
+
+        INCIDENTS_TBODY.appendChild(tr);
+      }
+    }
+
+    function updateSloCards() {
+      SLO_CONTAINER.innerHTML = "";
+
+      if (!lastSloData.length) {
+        const div = document.createElement("div");
+        div.className = "empty-state";
+        div.textContent = "Tanımlı SLO bulunamadı (config/slo.yaml boş olabilir).";
+        SLO_CONTAINER.appendChild(div);
+        SLO_COUNT_BADGE.textContent = "0 hizmet";
+        return;
+      }
+
+      SLO_COUNT_BADGE.textContent = lastSloData.length + " hizmet";
+
+      for (const row of lastSloData) {
+        const card = document.createElement("div");
+        const status = String(row.status || "").toUpperCase();
+        let cardStatusClass = "fail";
+        if (status === "PASS") {
+          cardStatusClass = "pass";
+        } else if (status === "PARTIAL") {
+          cardStatusClass = "partial";
+        }
+        card.className = "slo-card " + cardStatusClass;
+
+        const titleRow = document.createElement("div");
+        titleRow.className = "slo-title-row";
+
+        const serviceSpan = document.createElement("div");
+        serviceSpan.className = "slo-service";
+        serviceSpan.textContent = row.service || "-";
+
+        const statusSpan = document.createElement("span");
+        let statusClass = "status-pill-fail";
+        if (status === "PASS") {
+          statusClass = "status-pill-pass";
+        } else if (status === "PARTIAL") {
+          statusClass = "status-pill-partial";
+        }
+        statusSpan.className = "status-pill " + statusClass;
+        statusSpan.textContent = status || "-";
+
+        titleRow.appendChild(serviceSpan);
+        titleRow.appendChild(statusSpan);
+
+        const metrics = document.createElement("div");
+        metrics.className = "slo-metrics";
+
+        const fields = [
+          {
+            label: "Uptime",
+            value: formatPercent(Number(row.uptime_percent)),
+            target: formatPercent(Number(row.target_uptime_percent)),
+            goodWhenHigher: true,
+          },
+          {
+            label: "P95",
+            value: formatMs(Number(row.p95_ms)),
+            target: formatMs(Number(row.target_p95_ms)),
+            goodWhenHigher: false,
+          },
+        ];
+
+        for (const f of fields) {
+          const wrapper = document.createElement("div");
+
+          const label = document.createElement("div");
+          label.className = "metric-label";
+          label.textContent = f.label;
+
+          const value = document.createElement("div");
+          value.className = "metric-value";
+
+          const numericValue =
+            f.label === "Uptime" ? Number(row.uptime_percent) : Number(row.p95_ms);
+          const numericTarget =
+            f.label === "Uptime"
+              ? Number(row.target_uptime_percent)
+              : Number(row.target_p95_ms);
+
+          let cls = "";
+          if (!Number.isNaN(numericValue) && !Number.isNaN(numericTarget)) {
+            const ok = f.goodWhenHigher
+              ? numericValue >= numericTarget
+              : numericValue <= numericTarget;
+            cls = ok ? "metric-ok" : "metric-bad";
+          }
+
+          value.innerHTML =
+            '<span class="' +
+            cls +
+            '">' +
+            f.value +
+            "</span>" +
+            ' <span class="small">/ hedef ' +
+            f.target +
+            "</span>";
+
+          wrapper.appendChild(label);
+          wrapper.appendChild(value);
+          metrics.appendChild(wrapper);
+        }
+
+        card.appendChild(titleRow);
+        card.appendChild(metrics);
+
+        const windowInfo = document.createElement("div");
+        windowInfo.className = "small";
+        const windowHours = Number(row.window_hours);
+        if (!Number.isNaN(windowHours) && windowHours > 0) {
+          const rounded = windowHours % 1 === 0 ? windowHours.toFixed(0) : windowHours.toFixed(1);
+          windowInfo.textContent = "Pencere: " + rounded + " sa";
+        } else {
+          windowInfo.textContent = "Pencere: -";
+        }
+        card.appendChild(windowInfo);
+        SLO_CONTAINER.appendChild(card);
+      }
+    }
+
+    function setConnectionState(ok) {
+      if (ok) {
+        CONNECTION_LABEL.textContent = "API bağlı";
+      } else {
+        CONNECTION_LABEL.textContent = "API hatası";
+      }
+    }
+
+    function setMonitorState(ok) {
+      if (!MONITOR_LABEL || !MONITOR_PILL) return;
+      if (ok) {
+        MONITOR_LABEL.textContent = "Monitor aktif";
+        MONITOR_PILL.classList.remove("meta-pill-bad");
+      } else {
+        MONITOR_LABEL.textContent = "Monitor pasif";
+        MONITOR_PILL.classList.add("meta-pill-bad");
+      }
+    }
+
+    function setLastRefreshNow() {
+      const now = new Date();
+      LAST_REFRESH_LABEL.textContent =
+        "Son yenileme: " +
+        now.toLocaleTimeString("tr-TR", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+    }
+
+    async function fetchJson(url) {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) {
+        throw new Error("HTTP " + res.status);
+      }
+      return res.json();
+    }
+
+    async function refreshAll() {
+      try {
+        const [status, slo, incidents] = await Promise.all([
+          fetchJson("/api/status?last_minutes=5"),
+          fetchJson("/api/slo"),
+          fetchJson("/api/incidents?last_hours=24"),
+        ]);
+
+        lastStatusData = Array.isArray(status) ? status : [];
+        lastSloData = Array.isArray(slo) ? slo : [];
+        lastIncidentsData = Array.isArray(incidents) ? incidents : [];
+
+        updateStatusTable();
+        updateSloCards();
+        updateIncidentsTable();
+        setConnectionState(true);
+        setMonitorState(Array.isArray(status) && status.length > 0);
+        setLastRefreshNow();
+      } catch (err) {
+        console.error("Dashboard refresh error", err);
+        setConnectionState(false);
+        setMonitorState(false);
+
+        if (!lastStatusData.length) {
+          STATUS_TBODY.innerHTML =
+            '<tr><td colspan="7" class="error-state">/api/status okunamadı.</td></tr>';
+        }
+        if (!lastSloData.length) {
+          SLO_CONTAINER.innerHTML =
+            '<div class="error-state">/api/slo okunamadı.</div>';
+        }
+        if (!lastIncidentsData.length) {
+          INCIDENTS_TBODY.innerHTML =
+            '<tr><td colspan="5" class="error-state">/api/incidents okunamadı.</td></tr>';
+          INCIDENTS_COUNT_BADGE.textContent = "0 incident";
+        }
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      STATUS_FILTER.addEventListener("input", () => {
+        updateStatusTable();
+      });
+
+      refreshAll();
+      setInterval(refreshAll, 30000);
+
+      if (BACK_TO_TOP) {
+        BACK_TO_TOP.addEventListener("click", () => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        window.addEventListener("scroll", () => {
+          const scrolled = window.scrollY || document.documentElement.scrollTop || 0;
+          const docHeight = document.documentElement.scrollHeight || 0;
+          const winHeight = window.innerHeight || 0;
+
+          if (scrolled > 200 || scrolled + winHeight >= docHeight - 80) {
+            BACK_TO_TOP.classList.add("visible");
+          } else {
+            BACK_TO_TOP.classList.remove("visible");
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
+

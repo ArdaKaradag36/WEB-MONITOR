@@ -1,0 +1,87 @@
+# WatchDog hedef listesi (10 site)
+# - 5 kamu | 2 kişisel | 3 negatif (çalışmayan / hata verecek)
+
+targets:
+  # ---------- 5 KAMU ----------
+  - name: "Cumhurbaşkanlığı"
+    url: "https://www.tccb.gov.tr/"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/1.0"
+    latency_threshold_ms: 5000
+
+  - name: "NVI Randevu"
+    url: "https://randevu.nvi.gov.tr/"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/1.0"
+    latency_threshold_ms: 5000
+
+  - name: "e-Devlet Kapısı"
+    url: "https://www.turkiye.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/1.0"
+    latency_threshold_ms: 5000
+
+  - name: "TCMB"
+    url: "https://www.tcmb.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/1.0"
+    latency_threshold_ms: 5000
+
+  - name: "Resmi Gazete"
+    url: "https://www.resmigazete.gov.tr"
+    expected_status: 200
+    timeout: 8
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/1.0"
+    latency_threshold_ms: 5000
+
+  # ---------- 2 KİŞİSEL SİTE ----------
+  - name: "AirSense IoT"
+    url: "https://ardakaradag36.github.io/airsense-iot/"
+    expected_status: 200
+    timeout: 10
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/1.0"
+    latency_threshold_ms: 3000
+
+  - name: "Arda Portfolio"
+    url: "https://ardakaradag36.github.io/"
+    expected_status: 200
+    timeout: 10
+    method: "GET"
+    headers:
+      User-Agent: "WatchDog/1.0"
+    latency_threshold_ms: 3000
+
+  # ---------- 3 NEGATİF (çalışmayan / hata) ----------
+  - name: "Her zaman 500"
+    url: "https://httpstat.us/500"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Var olmayan alan adı"
+    url: "https://calismayan-domain-xyz12345.test"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+
+  - name: "Blackhole (erişilemez IP)"
+    url: "http://192.0.2.1"
+    expected_status: 200
+    timeout: 3
+    method: "GET"

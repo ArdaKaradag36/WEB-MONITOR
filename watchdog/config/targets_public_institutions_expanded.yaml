@@ -1,0 +1,601 @@
+targets:
+- name: Custom 1
+  url: https://www.tccb.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 2
+  url: https://www.tbmm.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 3
+  url: https://www.anayasa.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 4
+  url: https://www.yargitay.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 5
+  url: https://www.danistay.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 6
+  url: https://www.sayistay.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 7
+  url: https://www.icisleri.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 8
+  url: https://www.adalet.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 9
+  url: https://www.mfa.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 10
+  url: https://www.hmb.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 11
+  url: https://www.meb.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 12
+  url: https://www.msb.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 13
+  url: https://www.saglik.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 14
+  url: https://www.uab.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 15
+  url: https://www.tarimorman.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 16
+  url: https://www.sanayi.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 17
+  url: https://www.ticaret.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 18
+  url: https://www.enerji.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 19
+  url: https://www.ktb.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 20
+  url: https://www.csb.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 21
+  url: https://www.aile.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 22
+  url: https://www.calisma.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 23
+  url: https://www.genclikspor.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 24
+  url: https://www.mgk.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 25
+  url: https://www.mit.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 26
+  url: https://www.diyanet.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 27
+  url: https://www.savunmasanayii.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 28
+  url: https://www.iletisim.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 29
+  url: https://www.tcmb.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 30
+  url: https://www.spk.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 31
+  url: https://www.bddk.org.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 32
+  url: https://www.tse.org.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 33
+  url: https://www.tubitak.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 34
+  url: https://www.tuik.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 35
+  url: https://www.trthaber.com
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 36
+  url: https://www.aa.com.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 37
+  url: https://www.basinkonseyi.org.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 38
+  url: https://www.rtuk.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 39
+  url: https://www.btk.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 40
+  url: https://www.kik.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 41
+  url: https://www.adana.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 42
+  url: https://www.adiyaman.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 43
+  url: https://www.afyonkarahisar.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 44
+  url: https://www.agri.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 45
+  url: https://www.amasya.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 46
+  url: https://www.ankara.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 47
+  url: https://www.antalya.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 48
+  url: https://www.artvin.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 49
+  url: https://www.aydin.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 50
+  url: https://www.balikesir.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 51
+  url: https://www.bilecik.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 52
+  url: https://www.bingol.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 53
+  url: https://www.bitlis.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 54
+  url: https://www.bolu.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 55
+  url: https://www.burdur.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 56
+  url: https://www.bursa.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 57
+  url: https://www.canakkale.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 58
+  url: https://www.cankiri.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 59
+  url: https://www.corum.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 60
+  url: https://www.denizli.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 61
+  url: https://www.diyarbakir.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 62
+  url: https://www.edirne.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 63
+  url: https://www.elazig.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 64
+  url: https://www.erzincan.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 65
+  url: https://www.erzurum.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 66
+  url: https://www.eskisehir.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 67
+  url: https://www.gaziantep.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 68
+  url: https://www.giresun.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 69
+  url: https://www.gumushane.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 70
+  url: https://www.hakkari.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 71
+  url: https://www.hatay.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 72
+  url: https://www.isparta.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 73
+  url: https://www.mersin.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 74
+  url: https://www.istanbul.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 75
+  url: https://www.izmir.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 76
+  url: https://www.kars.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 77
+  url: https://www.kastamonu.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 78
+  url: https://www.kayseri.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 79
+  url: https://www.kirklareli.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 80
+  url: https://www.kirsehir.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 81
+  url: https://www.kocaeli.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 82
+  url: https://www.konya.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 83
+  url: https://www.kutahya.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 84
+  url: https://www.malatya.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 85
+  url: https://www.manisa.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 86
+  url: https://www.kahramanmaras.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 87
+  url: https://www.mardin.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 88
+  url: https://www.mugla.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 89
+  url: https://www.mus.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 90
+  url: https://www.nevsehir.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 91
+  url: https://www.nigde.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 92
+  url: https://www.ordu.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 93
+  url: https://www.rize.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 94
+  url: https://www.sakarya.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 95
+  url: https://www.samsun.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 96
+  url: https://www.siirt.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 97
+  url: https://www.sinop.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 98
+  url: https://www.sivas.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 99
+  url: https://www.tekirdag.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
+- name: Custom 100
+  url: https://www.tokat.gov.tr
+  expected_status: 200
+  timeout: 8
+  method: GET
+  latency_threshold_ms: 5000
