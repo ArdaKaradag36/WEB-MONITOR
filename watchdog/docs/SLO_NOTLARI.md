@@ -47,4 +47,3 @@ WatchDog SLO değerlendirmesi üç olası durum üretir:
 
 Dashboard ve `/api/slo` çıktısı bu üç değeri kullanır; `PARTIAL` durumları
 kartlarda sarı uyarı rengiyle vurgulanır.
-

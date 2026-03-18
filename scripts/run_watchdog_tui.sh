@@ -32,4 +32,3 @@ trap cleanup INT TERM EXIT
 
 echo "[WatchDog] Launching live dashboard (Ctrl+C to exit)..."
 python main.py --monitor-dashboard
-

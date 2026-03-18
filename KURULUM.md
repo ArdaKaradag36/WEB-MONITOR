@@ -48,6 +48,34 @@ python watchdog/main.py --monitor
 
 Terminalde periyodik health check loglarını görmelisin.
 
+### 3.2.1 (Opsiyonel) Email uyarılarını aç (SMTP)
+
+Email uyarıları için minimum şu değişkenler gerekli:
+
+- `WATCHDOG_SMTP_HOST`
+- `WATCHDOG_SMTP_FROM`
+- `WATCHDOG_SMTP_TO`
+
+Örnek (Gmail / App Password ile):
+
+```bash
+export WATCHDOG_SMTP_HOST=smtp.gmail.com
+export WATCHDOG_SMTP_PORT=587
+export WATCHDOG_SMTP_USERNAME="karadagarda06@gmail.com"
+export WATCHDOG_SMTP_PASSWORD="<gmail-app-password>"
+export WATCHDOG_SMTP_FROM="karadagarda06@gmail.com"
+export WATCHDOG_SMTP_TO="karadagarda06@gmail.com"
+```
+
+Notlar:
+
+- Email uyarıları **varsayılan kapalıdır**; SMTP bilgileri verilmeden mail gönderimi yapılmaz.
+- SMTP ayarlarını hızlı test etmek için:
+
+```bash
+python watchdog/main.py --send-test-email
+```
+
 ### 3.3 İlk raporu almak
 
 Bir süre çalıştıktan sonra (örneğin birkaç dakika), yeni bir terminal aç:
@@ -88,7 +116,9 @@ Health ve metrics endpoint’leri:
 
 ```bash
 curl -s http://localhost:8080/health
-curl -s http://localhost:8080/metrics | head -40
+# Not: /metrics endpoint'i Nginx tarafında Basic Auth ile korunur.
+# Kullanıcı/parola için README'deki htpasswd adımına bakın.
+curl -s -u prometheus:<parola> http://localhost:8080/metrics | head -40
 ```
 
 Stack’i durdurmak için:
@@ -109,4 +139,3 @@ python watchdog/main.py --monitor
 ```
 
 Bu dosya, `https://example.com/health` için basit bir health check içerir.
-

@@ -302,4 +302,3 @@ targets:
     expected_status: 200
     timeout: 5
     method: "GET"
-

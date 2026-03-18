@@ -1,13 +1,9 @@
-import asyncio
-from datetime import datetime, timezone
 from pathlib import Path
 
 import aiohttp
 import pytest
-
 from src.core.config import AppSettings
 from src.infrastructure.database import Database
-from src.infrastructure.notifiers import ConsoleNotifier
 from src.models.target import Target
 from src.services.monitor import _check_target
 
@@ -51,4 +47,3 @@ async def test_check_target_allowed_statuses_and_latency(tmp_path: Path) -> None
     assert stat.up_checks == 1
 
     await db.close()
-

@@ -128,7 +128,11 @@ async def compute_slo_results(
         # Uptime ve p95'in basit ortalaması (tüm URL'ler eşit ağırlıklı).
         uptime = sum(s.uptime_percentage for s in matching) / len(matching)
         # Bazı URL'lerde p95 olmayabilir (None) – sadece mevcut değerleri al.
-        p95_values = [s.p95_response_time_ms for s in matching if s.p95_response_time_ms is not None]
+        p95_values = [
+            s.p95_response_time_ms
+            for s in matching
+            if s.p95_response_time_ms is not None
+        ]
         if p95_values:
             p95 = sum(p95_values) / len(p95_values)
         else:
@@ -146,4 +150,3 @@ async def compute_slo_results(
         )
 
     return results
-

@@ -1,14 +1,41 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import List, Optional
-import os
 
 import yaml
 from dotenv import load_dotenv
 from pydantic import BaseModel, BaseSettings, Field, ValidationError, root_validator
 
 from src.models.target import Target
+
+WATCHDOG_DIR = Path(__file__).resolve().parents[2]
+REPO_ROOT = WATCHDOG_DIR.parent
+
+
+def resolve_config_path(path: Path) -> Path:
+    """
+    Resolve configuration paths robustly across common working directories.
+
+    This project is often run in two ways:
+    - from repo root:   `python watchdog/main.py ...`
+    - from watchdog/:   `python main.py ...` (or installed package)
+
+    For relative paths, we try:
+    1) as-is relative to current working directory
+    2) relative to the `watchdog/` directory
+    3) relative to the repo root
+    """
+    if path.is_absolute():
+        return path
+    if path.exists():
+        return path
+    candidate = WATCHDOG_DIR / path
+    if candidate.exists():
+        return candidate
+    candidate = REPO_ROOT / path
+    return candidate
 
 
 class AppSettings(BaseSettings):
@@ -229,12 +256,27 @@ def load_settings() -> AppSettings:
     if profile and not os.getenv("WATCHDOG_TARGETS_FILE"):
         settings.targets_file = Path(f"config/targets_{profile}.yaml")
 
+    # Normalise paths so defaults work from repo root or watchdog/.
+    settings.targets_file = resolve_config_path(settings.targets_file)
+    if settings.ci_critical_services_file is not None:
+        settings.ci_critical_services_file = resolve_config_path(
+            settings.ci_critical_services_file
+        )
+    if settings.maintenance_windows_file is not None:
+        settings.maintenance_windows_file = resolve_config_path(
+            settings.maintenance_windows_file
+        )
+
     return settings
 
 
 def load_targets(path: Path) -> List[Target]:
     """
-    Load and validate monitoring targets from a YAML configuration file.
+    Load and validate monitoring targets from a configuration file.
+
+    Supported formats:
+    - YAML: targets file with structure `{ "targets": [ ... ] }`
+    - TXT : plain text file with one URL per line (comments with `#` supported)
 
     :param path: Path to the YAML file.
     :return: List of validated Target instances.
@@ -244,8 +286,43 @@ def load_targets(path: Path) -> List[Target]:
     if not path.exists():
         raise FileNotFoundError(f"Targets configuration file not found: {path}")
 
-    with path.open("r", encoding="utf-8") as f:
-        raw = yaml.safe_load(f) or {}
+    # Plain links file support (one URL per line).
+    if path.suffix.lower() in {".txt", ".links"}:
+        lines = path.read_text(encoding="utf-8").splitlines()
+        urls: List[str] = []
+        for line in lines:
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#"):
+                continue
+            urls.append(stripped)
+        if not urls:
+            raise ValidationError(
+                [
+                    {
+                        "loc": ("targets",),
+                        "msg": f"No URLs found in links file: {path}",
+                        "type": "value_error",
+                    }
+                ],
+                model=TargetsConfig,
+            )
+
+        raw = {
+            "targets": [
+                {
+                    "name": f"Link {i}",
+                    "url": url,
+                    "expected_status": 200,
+                    "timeout": 8,
+                    "method": "GET",
+                    "latency_threshold_ms": 5000,
+                }
+                for i, url in enumerate(urls, start=1)
+            ]
+        }
+    else:
+        with path.open("r", encoding="utf-8") as f:
+            raw = yaml.safe_load(f) or {}
 
     try:
         cfg = TargetsConfig(**raw)
@@ -263,7 +340,9 @@ def load_critical_services(path: Path) -> List[str]:
     Load a list of critical service URLs from a YAML configuration file.
     """
     if not path.exists():
-        raise FileNotFoundError(f"Critical services configuration file not found: {path}")
+        raise FileNotFoundError(
+            f"Critical services configuration file not found: {path}"
+        )
 
     with path.open("r", encoding="utf-8") as f:
         raw = yaml.safe_load(f) or {}
@@ -315,9 +394,9 @@ __all__ = [
     "CriticalServicesConfig",
     "MaintenanceWindow",
     "MaintenanceWindowsConfig",
+    "resolve_config_path",
     "load_settings",
     "load_targets",
     "load_critical_services",
     "load_maintenance_windows",
 ]
-

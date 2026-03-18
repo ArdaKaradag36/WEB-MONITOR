@@ -10,7 +10,6 @@ import aiosqlite
 
 from src.core.logger import get_logger
 
-
 logger = get_logger("database")
 
 
@@ -216,8 +215,9 @@ class Database:
             autocommit=autocommit,
         )
 
-
-    async def get_summary_stats(self, since: Optional[datetime] = None) -> List[SummaryStat]:
+    async def get_summary_stats(
+        self, since: Optional[datetime] = None
+    ) -> List[SummaryStat]:
         """
         Compute uptime percentage, average response time and latency percentiles per URL.
 
@@ -544,5 +544,3 @@ class Database:
 
 
 __all__ = ["Database", "CheckResult", "SummaryStat", "Incident"]
-
-

@@ -1,0 +1,7 @@
+targets:
+  - name: "Example"
+    url: "https://example.com"
+    expected_status: 200
+    timeout: 5
+    method: "GET"
+    latency_threshold_ms: 10000

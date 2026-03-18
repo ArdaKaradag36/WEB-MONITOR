@@ -30,6 +30,20 @@ source .venv/bin/activate
 pip install -r watchdog/requirements.txt
 ```
 
+### Quick demo (tek komut)
+
+Repo root’tan:
+
+```bash
+bash scripts/demo.sh
+```
+
+Beklenenler (kısaltılmış):
+
+- `validate-config` “All configuration checks passed successfully.” yazar
+- `metrics-server` `/health` için `{"status": "ok"}` döner
+- `/metrics` çıktısında `watchdog_*` metrikleri görünür
+
 Basit bir hedef dosyasıyla monitor loop'u başlat:
 
 ```bash
@@ -151,6 +165,36 @@ environment:
   WATCHDOG_TARGETS_FILE: /app/config/targets_public_institutions_expanded.yaml
 ```
 
+### Email notifier (SMTP) hızlı kurulum
+
+Email uyarıları, **SMTP** üzerinden çalışır ve sadece şu alanlar doluysa aktif olur:
+
+- `WATCHDOG_SMTP_HOST`
+- `WATCHDOG_SMTP_FROM`
+- `WATCHDOG_SMTP_TO`
+
+Opsiyonel ama çoğu provider için gerekli:
+
+- `WATCHDOG_SMTP_USERNAME`
+- `WATCHDOG_SMTP_PASSWORD`
+
+Örnek (Gmail / App Password ile):
+
+```bash
+export WATCHDOG_SMTP_HOST=smtp.gmail.com
+export WATCHDOG_SMTP_PORT=587
+export WATCHDOG_SMTP_USERNAME="karadagarda06@gmail.com"
+export WATCHDOG_SMTP_PASSWORD="<gmail-app-password>"
+export WATCHDOG_SMTP_FROM="karadagarda06@gmail.com"
+export WATCHDOG_SMTP_TO="karadagarda06@gmail.com"
+```
+
+Not: Gmail için normal şifre değil, **App Password** kullanman gerekir.
+
+#### Önemli not (repo’yu klonlayanlar için)
+
+- WatchDog **kimseye otomatik email atmaz**. Email uyarıları varsayılan olarak kapalıdır.\n- Email gönderebilmek için SMTP bilgilerini **senin** vermen gerekir (environment veya `.env`).\n- Bu repo **SMTP kullanıcı adı/şifresi içermez**. `.env` dosyaları `.gitignore` ile dışlanır.\n\nSMTP ayarlarını hızlı doğrulamak için tek seferlik test mail:\n\n```bash\npython watchdog/main.py --send-test-email\n```\n\nBu komut, `WATCHDOG_SMTP_*` ayarların doğruysa “sent successfully” yazar; yanlışsa hatayı ekrana basar.
+
 ---
 
 ## Temel CLI Komutları
@@ -213,7 +257,7 @@ Docker compose içindeki `watchdog-metrics` servisi bu modu kullanır.
 
 ### `--slo-report`
 
-`config/slo.yaml` dosyasına göre SLO raporu üretir.
+`watchdog/config/slo.yaml` dosyasına göre SLO raporu üretir (repo root’tan veya `watchdog/` içinden çalıştırılabilir).
 
 ```bash
 python watchdog/main.py --slo-report --last-hours 24
@@ -221,7 +265,7 @@ python watchdog/main.py --slo-report --last-hours 24
 
 ### `--validate-config`
 
-`.env` ve `targets.yaml` yapılarını doğrular, hataları listeler.
+`.env` ve targets konfigürasyonunu doğrular, hataları listeler.
 
 ```bash
 python watchdog/main.py --validate-config
@@ -500,4 +544,3 @@ GitHub Release için tipik akış:
 - **Response body sınırı (MAX_BODY_BYTES)**: HTTP health check'lerinde response body en fazla ilk 50KB'a kadar okunur ve `expected_body_substring` ile `expected_json_*` kontrolleri sadece bu kısım üzerinde çalışır. Çok büyük body'lere sahip endpoint'lerde bu durum, aranan substring veya JSON alanı daha sonra geliyorsa false negative sonuçlara yol açabilir; prod'da bu hedefler için daha spesifik/ufak payload'lı health endpoint'leri tercih edilmelidir.
 
 - **SQLite mimarisi (tek writer için optimize)**: WatchDog varsayılan olarak tek writer (monitor loop) ve hafif reader'lar (API / metrics) için optimize edilmiş gömülü bir SQLite veritabanı kullanır. Yüksek hacimli raporlama, ağır analitik sorgular veya yüksek QPS dashboard senaryoları için verileri periyodik olarak export edip harici bir veritabanına (örn. PostgreSQL) aktarmanız ve bu sorguları orada çalıştırmanız önerilir.
-

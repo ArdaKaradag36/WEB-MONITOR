@@ -1,6 +1,6 @@
 # WatchDog — Terminal Analizi, Rapor ve Rakip Karşılaştırması
 
-**Tarih:** 11 Mart 2025  
+**Tarih:** 11 Mart 2025
 **Kapsam:** Terminaller, mevcut durum, eksiklik listesi, rakip firmalara göre analiz.
 
 ---

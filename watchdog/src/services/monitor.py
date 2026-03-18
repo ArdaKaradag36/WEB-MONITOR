@@ -7,8 +7,8 @@ import random
 import socket
 import ssl
 import time
-from datetime import datetime, timezone
-from typing import Iterable, List, Optional, Tuple
+from datetime import datetime, timedelta, timezone
+from typing import Iterable, List, Optional
 
 import aiohttp
 from yarl import URL
@@ -18,7 +18,6 @@ from src.core.logger import get_logger
 from src.infrastructure.database import Database
 from src.infrastructure.notifiers import CompositeNotifier
 from src.models.target import Target
-
 
 logger = get_logger("monitor")
 
@@ -79,7 +78,7 @@ async def _is_safe_url(url: str, allow_private_ips: bool) -> bool:
             logger.warning("DNS resolution failed for %s: %s", url, exc)
             return False
 
-        for family, _, _, _, sockaddr in infos:
+        for _family, _, _, _, sockaddr in infos:
             ip_str = sockaddr[0]
             try:
                 resolved_ips.append(ipaddress.ip_address(ip_str))
@@ -87,11 +86,7 @@ async def _is_safe_url(url: str, allow_private_ips: bool) -> bool:
                 continue
 
     for ip in resolved_ips:
-        if (
-            ip.is_loopback
-            or ip.is_link_local
-            or ip.is_private
-        ):
+        if ip.is_loopback or ip.is_link_local or ip.is_private:
             if not allow_private_ips:
                 logger.warning(
                     "Blocked potential SSRF target %s resolved to restricted IP %s",
@@ -237,9 +232,7 @@ async def _check_target(
 
     # Determine how many retries we are allowed for this target.
     max_retries = (
-        target.max_retries
-        if target.max_retries is not None
-        else settings.max_retries
+        target.max_retries if target.max_retries is not None else settings.max_retries
     )
 
     attempt = 0
@@ -319,9 +312,7 @@ async def _check_target(
                         )
                         json_ok = False
                     except Exception as exc:  # noqa: BLE001
-                        logger.warning(
-                            "Failed to parse JSON for %s: %s", url, exc
-                        )
+                        logger.warning("Failed to parse JSON for %s: %s", url, exc)
                         json_ok = False
 
                 # HTTP status evaluation.
@@ -334,17 +325,12 @@ async def _check_target(
 
                 # Retry on transient 5xx responses if still not healthy.
                 is_transient_http_error = 500 <= status_code < 600
-                if (
-                    not is_up
-                    and is_transient_http_error
-                    and attempt < max_retries
-                ):
+                if not is_up and is_transient_http_error and attempt < max_retries:
                     backoff = min(5.0, 0.5 * (2**attempt))
                     jitter = random.uniform(0, 0.1)
                     sleep_for = backoff + jitter
                     logger.warning(
-                        "Transient HTTP %s for %s, retrying in %.2fs "
-                        "(attempt %d/%d)",
+                        "Transient HTTP %s for %s, retrying in %.2fs (attempt %d/%d)",
                         status_code,
                         url,
                         sleep_for,
@@ -409,7 +395,10 @@ async def _check_target(
             break
 
     # Apply latency threshold if configured on the target.
-    if target.latency_threshold_ms is not None and elapsed_ms > target.latency_threshold_ms:
+    if (
+        target.latency_threshold_ms is not None
+        and elapsed_ms > target.latency_threshold_ms
+    ):
         latency_ok = False
     else:
         latency_ok = True
@@ -452,13 +441,10 @@ def _adjust_concurrency(
     # Multiplicative decrease on high timeout ratio, high 5xx ratio,
     # or generally slow waves.
     if (
-        (
-            timeout_ratio >= HIGH_TIMEOUT_THRESHOLD
-            or http_5xx_ratio >= HIGH_5XX_THRESHOLD
-            or elapsed > SLOW_WAVE_THRESHOLD
-        )
-        and effective_limit > 1
-    ):
+        timeout_ratio >= HIGH_TIMEOUT_THRESHOLD
+        or http_5xx_ratio >= HIGH_5XX_THRESHOLD
+        or elapsed > SLOW_WAVE_THRESHOLD
+    ) and effective_limit > 1:
         return max(1, int(effective_limit * 0.7))
 
     # Additive increase when system is healthy and fast.
@@ -562,7 +548,9 @@ async def monitor_targets(
 
             results: List[tuple[str, bool, int, float, str | None]] = []
 
-            async def _run_check(target: Target) -> tuple[str, bool, int, float, str | None]:
+            async def _run_check(
+                target: Target,
+            ) -> tuple[str, bool, int, float, str | None]:
                 async with semaphore:
                     return await _check_target(session, db, target, settings)
 
@@ -578,7 +566,9 @@ async def monitor_targets(
                 )
                 for item in batch_results:
                     if isinstance(item, Exception):
-                        logger.warning("Health check task failed with exception: %s", item)
+                        logger.warning(
+                            "Health check task failed with exception: %s", item
+                        )
                         continue
                     results.append(item)
 
@@ -612,10 +602,7 @@ async def monitor_targets(
                         f"targets down ({failure_ratio:.0%})"
                     ),
                 )
-            elif (
-                failure_ratio < RECOVERY_THRESHOLD
-                and notifier.is_suppressed
-            ):
+            elif failure_ratio < RECOVERY_THRESHOLD and notifier.is_suppressed:
                 notifier.set_suppression(
                     False,
                     reason=(
@@ -713,6 +700,7 @@ async def monitor_targets(
 
             # Optional heartbeat ping (deadman switch).
             if settings.heartbeat_ping_url:
+
                 async def _send_heartbeat(url: str) -> None:
                     try:
                         # Short timeout to avoid blocking the main loop.
@@ -739,4 +727,3 @@ __all__ = [
     "_check_target",
     "_adjust_concurrency",
 ]
-

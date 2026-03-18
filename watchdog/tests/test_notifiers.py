@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Any, List
 
 import pytest
-
 from src.infrastructure.notifiers import CheckStatus, CompositeNotifier, ConsoleNotifier
 
 
@@ -136,4 +135,3 @@ async def test_composite_notifier_fanout_and_suppression() -> None:
     assert n1.suppressed is False
     assert n2.suppressed is False
     assert composite.is_suppressed is False
-

@@ -4,7 +4,6 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
-
 from src.infrastructure.database import Database
 from src.services.slo import SloConfig, compute_slo_results, load_slo_config
 
@@ -178,4 +177,3 @@ async def test_slo_status_pass_partial_fail(tmp_path: Path) -> None:
     assert status_fail == "FAIL"
 
     await db.close()
-

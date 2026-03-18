@@ -1,19 +1,18 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Dict, Optional, Protocol
-
-import aiohttp
 import asyncio
 import json
 import smtplib
+from dataclasses import dataclass
 from email.message import EmailMessage
+from typing import Dict, Optional, Protocol
+
+import aiohttp
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
 
 from src.core.logger import get_logger
-
 
 logger = get_logger("notifiers")
 console = Console()
@@ -38,8 +37,7 @@ class Notifier(Protocol):
         status_code: int,
         response_time_ms: float,
         name: Optional[str] = None,
-    ) -> None:
-        ...
+    ) -> None: ...
 
 
 class ConsoleNotifier:
@@ -139,10 +137,7 @@ class ConsoleNotifier:
             )
             return
 
-        if (
-            state.consecutive_failures >= self._failure_threshold
-            and not state.is_down
-        ):
+        if state.consecutive_failures >= self._failure_threshold and not state.is_down:
             state.is_down = True
             self._print_critical(
                 display_name,
@@ -340,10 +335,7 @@ class EmailNotifier:
         # Service is down.
         state.consecutive_failures += 1
 
-        if (
-            state.consecutive_failures >= self._failure_threshold
-            and not state.is_down
-        ):
+        if state.consecutive_failures >= self._failure_threshold and not state.is_down:
             state.is_down = True
             subject = f"[WatchDog] 🚨 CRITICAL: {display_name}"
             body = (
@@ -365,7 +357,9 @@ class EmailNotifier:
 
         def _send() -> None:
             try:
-                with smtplib.SMTP(self._smtp_host, self._smtp_port, timeout=10) as server:
+                with smtplib.SMTP(
+                    self._smtp_host, self._smtp_port, timeout=10
+                ) as server:
                     server.ehlo()
                     try:
                         server.starttls()
@@ -617,7 +611,9 @@ class CompositeNotifier:
                     name=name,
                 )
             except Exception as exc:  # noqa: BLE001
-                logger.warning("Notifier %s failed for %s: %s", type(notifier).__name__, url, exc)
+                logger.warning(
+                    "Notifier %s failed for %s: %s", type(notifier).__name__, url, exc
+                )
 
 
 __all__ = [
@@ -629,5 +625,3 @@ __all__ = [
     "CompositeNotifier",
     "Notifier",
 ]
-
-

@@ -80,4 +80,3 @@ When in doubt, follow the existing style of the module you are editing.
 - **CI**: Ensure the GitHub Actions CI pipeline is green (tests passing).
 
 Thank you for helping improve WatchDog!
-

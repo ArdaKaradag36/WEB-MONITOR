@@ -7,11 +7,14 @@ from typing import Any, List
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-
-from src.core.config import AppSettings, load_settings
+from src.core.config import (
+    AppSettings,
+    load_settings,
+    load_targets,
+    resolve_config_path,
+)
 from src.infrastructure.database import Database
 from src.services.slo import SloConfig, compute_slo_results, load_slo_config
-
 
 app = FastAPI(title="WatchDog API")
 
@@ -91,7 +94,7 @@ async def api_incidents(last_hours: float = 24.0) -> List[dict[str, Any]]:
 @app.get("/api/slo")
 async def api_slo() -> List[dict[str, Any]]:
     settings: AppSettings = load_settings()
-    slo_path = Path("config/slo.yaml")
+    slo_path = resolve_config_path(Path("config/slo.yaml"))
     if not slo_path.exists():
         return []
 
@@ -118,6 +121,29 @@ async def api_slo() -> List[dict[str, Any]]:
     return items
 
 
+@app.get("/api/config")
+async def api_config() -> dict[str, Any]:
+    """
+    Small diagnostics endpoint to make it obvious which DB and targets file
+    this API instance is reading from.
+    """
+    settings: AppSettings = load_settings()
+    targets_count = None
+    targets_error = None
+    try:
+        targets = load_targets(settings.targets_file)
+        targets_count = len(targets)
+    except Exception as exc:  # noqa: BLE001
+        targets_error = str(exc)
+
+    return {
+        "db_path": str(settings.db_path),
+        "targets_file": str(settings.targets_file),
+        "targets_count": targets_count,
+        "targets_error": targets_error,
+    }
+
+
 @app.get("/", response_class=HTMLResponse)
 async def index() -> HTMLResponse:
     index_path = static_dir / "index.html"
@@ -132,4 +158,3 @@ async def index() -> HTMLResponse:
 
     content = index_path.read_text(encoding="utf-8")
     return HTMLResponse(content=content, status_code=200)
-

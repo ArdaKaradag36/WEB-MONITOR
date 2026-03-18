@@ -5,19 +5,19 @@ import asyncio
 import csv
 import os
 import signal
+import smtplib
 from datetime import datetime, timedelta, timezone
+from email.message import EmailMessage
 from pathlib import Path
 from typing import NoReturn, Optional
-from urllib.parse import parse_qsl, urlparse, urlunparse, urlencode
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from aiohttp import web
 from rich.console import Console
 from rich.live import Live
 from rich.table import Table
-
 from src.core.config import (
     AppSettings,
-    TargetsConfig,
     load_critical_services,
     load_settings,
     load_targets,
@@ -35,9 +35,23 @@ from src.infrastructure.notifiers import (
 from src.services.monitor import monitor_targets
 from src.services.slo import SloConfig, compute_slo_results, load_slo_config
 
-
 logger = get_logger("main")
 console = Console()
+
+WATCHDOG_DIR = Path(__file__).resolve().parent
+
+
+def _resolve_watchdog_relative_path(path: Path) -> Path:
+    """
+    Resolve a possibly-relative path in a way that works both when running from
+    repo root and when running from inside the `watchdog/` directory.
+    """
+    if path.is_absolute():
+        return path
+    if path.exists():
+        return path
+    candidate = WATCHDOG_DIR / path
+    return candidate
 
 
 async def _run_monitor() -> None:
@@ -65,14 +79,12 @@ async def _run_monitor() -> None:
     if settings.slack_webhook_url:
         slack_notifier = SlackNotifier(settings.slack_webhook_url)
         notifiers.append(slack_notifier)
-        logger.info("Slack notifier configured; alerts will be sent to console and Slack.")
+        logger.info(
+            "Slack notifier configured; alerts will be sent to console and Slack."
+        )
 
     # Configure email notifier if SMTP settings are provided.
-    if (
-        settings.smtp_host
-        and settings.smtp_from
-        and settings.smtp_to
-    ):
+    if settings.smtp_host and settings.smtp_from and settings.smtp_to:
         email_notifier = EmailNotifier(
             smtp_host=settings.smtp_host,
             smtp_port=settings.smtp_port,
@@ -87,6 +99,25 @@ async def _run_monitor() -> None:
             "Email notifier configured; alerts will be sent to %s.",
             settings.smtp_to,
         )
+    else:
+        # If any SMTP-related env var is set but required fields are missing,
+        # log a clear hint so misconfiguration is obvious.
+        if any(
+            v
+            for v in (
+                settings.smtp_host,
+                settings.smtp_username,
+                settings.smtp_password,
+                settings.smtp_from,
+                settings.smtp_to,
+            )
+        ):
+            logger.warning(
+                "SMTP settings are partially configured but email alerts are disabled. "
+                "To enable, set WATCHDOG_SMTP_HOST, WATCHDOG_SMTP_FROM, and "
+                "WATCHDOG_SMTP_TO (and optionally "
+                "WATCHDOG_SMTP_USERNAME/WATCHDOG_SMTP_PASSWORD)."
+            )
 
     webhook_url = os.getenv("WATCHDOG_WEBHOOK_URL")
     if webhook_url:
@@ -129,7 +160,86 @@ async def _run_monitor() -> None:
         logger.info("Shutdown complete.")
 
 
-def _compute_since(since_str: Optional[str], last_hours: Optional[float]) -> Optional[datetime]:
+async def _run_send_test_email() -> None:
+    """
+    Send a single SMTP test email using WATCHDOG_SMTP_* settings.
+
+    This is intended to debug delivery issues without waiting for CRITICAL/RESOLVED
+    transitions in monitor mode.
+    """
+    configure_logging()
+    settings: AppSettings = load_settings()
+
+    missing: list[str] = []
+    if not settings.smtp_host:
+        missing.append("WATCHDOG_SMTP_HOST")
+    if not settings.smtp_from:
+        missing.append("WATCHDOG_SMTP_FROM")
+    if not settings.smtp_to:
+        missing.append("WATCHDOG_SMTP_TO")
+    if missing:
+        console.print("[bold red]SMTP test email cannot run.[/bold red]")
+        console.print("Missing required settings:")
+        for k in missing:
+            console.print(f"- {k}")
+        raise SystemExit(2)
+
+    subject = "[WatchDog] SMTP test email"
+    body = (
+        "This is a test email sent by WatchDog.\n\n"
+        f"Host: {settings.smtp_host}\n"
+        f"Port: {settings.smtp_port}\n"
+        f"From: {settings.smtp_from}\n"
+        f"To: {settings.smtp_to}\n"
+    )
+
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = settings.smtp_from
+    msg["To"] = settings.smtp_to
+    msg.set_content(body)
+
+    def _send() -> None:
+        # Port 465 is typically implicit TLS (SMTPS).
+        if int(settings.smtp_port) == 465:
+            server_ctx = smtplib.SMTP_SSL(
+                settings.smtp_host,
+                settings.smtp_port,
+                timeout=15,
+            )
+        else:
+            server_ctx = smtplib.SMTP(
+                settings.smtp_host,
+                settings.smtp_port,
+                timeout=15,
+            )
+
+        with server_ctx as server:
+            server.ehlo()
+
+            # Use STARTTLS only when supported.
+            if getattr(server, "has_extn", None) and server.has_extn("starttls"):
+                server.starttls()
+                server.ehlo()
+
+            if settings.smtp_username and settings.smtp_password:
+                server.login(settings.smtp_username, settings.smtp_password)
+            server.send_message(msg)
+
+    try:
+        await asyncio.to_thread(_send)
+    except Exception as exc:  # noqa: BLE001
+        console.print("[bold red]SMTP test email failed.[/bold red]")
+        console.print(str(exc))
+        raise SystemExit(1) from exc
+
+    console.print("[bold green]SMTP test email sent successfully.[/bold green]")
+
+
+def _compute_since(
+    since_str: Optional[str],
+    last_hours: Optional[float],
+) -> Optional[datetime]:
     """
     Derive a UTC datetime lower bound from CLI arguments.
 
@@ -144,12 +254,12 @@ def _compute_since(since_str: Optional[str], last_hours: Optional[float]) -> Opt
             if dt.tzinfo is None:
                 dt = dt.replace(tzinfo=timezone.utc)
             return dt.astimezone(timezone.utc)
-        except ValueError:
+        except ValueError as exc:
             console.print(
                 "[bold red]Invalid --since value. "
                 "Use ISO-8601 format, e.g. 2026-03-11T12:00:00[/bold red]"
             )
-            raise SystemExit(1)
+            raise SystemExit(1) from exc
     return None
 
 
@@ -187,7 +297,8 @@ async def _run_report(
         stats = [s for s in stats if needle in s.url.lower()]
         if not stats:
             console.print(
-                f"[bold yellow]No targets matched URL filter: '{url_contains}'[/bold yellow]"
+                "[bold yellow]No targets matched URL filter: "
+                f"'{url_contains}'[/bold yellow]"
             )
             return
 
@@ -260,13 +371,15 @@ async def _run_incidents(
         incidents = [i for i in incidents if needle in i.url.lower()]
         if not incidents:
             console.print(
-                f"[bold yellow]No incidents matched URL filter: '{url_contains}'[/bold yellow]"
+                "[bold yellow]No incidents matched URL filter: "
+                f"'{url_contains}'[/bold yellow]"
             )
             return
 
     # Optional sorting: default by start time ascending.
     reverse = sort_order == "desc"
     if sort_by == "duration":
+
         def _duration_minutes(inc: Incident) -> float:
             if inc.ended_at is None:
                 return 0.0
@@ -319,8 +432,9 @@ async def _run_validate_config() -> None:
     try:
         settings: AppSettings = load_settings()
         console.print(
-            f"[green]✓[/green] Loaded settings from [bold]{settings.targets_file}[/bold] "
-            f"and DB path [bold]{settings.db_path}[/bold]"
+            "[green]✓[/green] Loaded settings from "
+            f"[bold]{settings.targets_file}[/bold] and DB path "
+            f"[bold]{settings.db_path}[/bold]"
         )
     except Exception as exc:  # noqa: BLE001
         errors.append(f"Environment / .env validation failed: {exc}")
@@ -339,7 +453,8 @@ async def _run_validate_config() -> None:
             # Reuse load_targets to leverage pydantic validation.
             targets = load_targets(path)
             console.print(
-                f"[green]✓[/green] Loaded [bold]{len(targets)}[/bold] targets from [bold]{path}[/bold]"
+                "[green]✓[/green] Loaded "
+                f"[bold]{len(targets)}[/bold] targets from [bold]{path}[/bold]"
             )
     except Exception as exc:  # noqa: BLE001
         errors.append(f"Targets configuration validation failed: {exc}")
@@ -350,7 +465,9 @@ async def _run_validate_config() -> None:
             console.print(f"- [red]{err}[/red]")
         raise SystemExit(1)
 
-    console.print("\n[bold green]All configuration checks passed successfully.[/bold green]")
+    console.print(
+        "\n[bold green]All configuration checks passed successfully.[/bold green]"
+    )
 
 
 async def _run_ci_check(
@@ -445,7 +562,9 @@ async def _run_ci_check(
     # Optional critical services filter from configuration.
     if settings.ci_critical_services_file is not None:
         try:
-            critical_services = load_critical_services(settings.ci_critical_services_file)
+            critical_services = load_critical_services(
+                settings.ci_critical_services_file
+            )
         except FileNotFoundError:
             logger.warning(
                 "CI critical services file not found: %s",
@@ -473,11 +592,17 @@ async def _run_ci_check(
     for stat in grouped_stats:
         if min_uptime is not None and stat.uptime_percentage < min_uptime:
             violations.append(
-                f"Uptime {stat.uptime_percentage:.2f}% < {min_uptime:.2f}% for {stat.url}"
+                "Uptime "
+                f"{stat.uptime_percentage:.2f}% < {min_uptime:.2f}% for {stat.url}"
             )
-        if max_latency_ms is not None and stat.average_response_time_ms > max_latency_ms:
+        if (
+            max_latency_ms is not None
+            and stat.average_response_time_ms > max_latency_ms
+        ):
             violations.append(
-                f"Avg latency {stat.average_response_time_ms:.2f}ms > {max_latency_ms:.2f}ms for {stat.url}"
+                "Avg latency "
+                f"{stat.average_response_time_ms:.2f}ms > {max_latency_ms:.2f}ms "
+                f"for {stat.url}"
             )
 
     if violations:
@@ -513,11 +638,13 @@ async def _run_status(
 
     if not stats:
         console.print(
-            f"[bold yellow]No check data found in the last {last_minutes} minutes.[/bold yellow]"
+            "[bold yellow]No check data found in the last "
+            f"{last_minutes} minutes.[/bold yellow]"
         )
         return
 
-    # En sorunlu hedefler en üstte olacak şekilde, önce uptime sonra latency’ye göre sırala.
+    # En sorunlu hedefler en üstte olacak şekilde, önce uptime sonra latency’ye
+    # göre sırala.
     stats.sort(
         key=lambda s: (
             s.uptime_percentage,
@@ -575,7 +702,9 @@ async def _run_slo_report(
 
     db = await Database.create(settings.db_path)
     try:
-        config: SloConfig = load_slo_config(slo_config_path)
+        config: SloConfig = load_slo_config(
+            _resolve_watchdog_relative_path(slo_config_path)
+        )
         # last_hours argümanı verilmişse tüm servisler için onu kullan,
         # aksi halde her servis kendi window_hours değerini kullanır.
         if last_hours is not None:
@@ -657,10 +786,12 @@ async def _run_export_csv(
 
     logger.info("Export completed to %s", output_path)
 
+
 async def _run_dashboard(refresh_interval: float = 5.0) -> None:
     """
     Live TUI dashboard that periodically refreshes uptime statistics.
-    Shows only URLs from the current targets file so the table matches the active monitor set.
+    Shows only URLs from the current targets file so the table matches the
+    active monitor set.
     """
     configure_logging()
     settings: AppSettings = load_settings()
@@ -668,13 +799,17 @@ async def _run_dashboard(refresh_interval: float = 5.0) -> None:
     # DB stores URL as str; Target.url is AnyHttpUrl — normalize to str for matching
     current_urls: set[str] = {str(t.url) for t in targets}
 
-    logger.info("Starting WatchDog dashboard (refresh interval: %.1fs)", refresh_interval)
+    logger.info(
+        "Starting WatchDog dashboard (refresh interval: %.1fs)",
+        refresh_interval,
+    )
 
     async def _build_table() -> Table:
         db = await Database.create(settings.db_path)
         try:
-            # Dashboard: son 1 saatlik pencereyi kullan (900 hedef + düşük concurrency ile
-            # tek wave süresi uzun olduğundan 5 dakika penceresi çoğu zaman boş kalabiliyor).
+            # Dashboard: son 1 saatlik pencereyi kullan (900 hedef + düşük
+            # concurrency ile tek wave süresi uzun olduğundan 5 dakika penceresi
+            # çoğu zaman boş kalabiliyor).
             since = datetime.now(timezone.utc) - timedelta(hours=1)
             stats = await db.get_summary_stats(since=since)
             # Sadece şu anki hedef listesindeki URL'leri göster (veri seti ile uyumlu)
@@ -736,7 +871,7 @@ async def _metrics_handler(request: web.Request) -> web.Response:
 
         # Optional SLO metrics if slo.yaml exists.
         slo_results = []
-        slo_path = Path("config/slo.yaml")
+        slo_path = _resolve_watchdog_relative_path(Path("config/slo.yaml"))
         if slo_path.exists():
             try:
                 slo_cfg: SloConfig = load_slo_config(slo_path)
@@ -749,31 +884,55 @@ async def _metrics_handler(request: web.Request) -> web.Response:
     lines: list[str] = []
     lines.append("# HELP watchdog_uptime_percent Uptime percentage for each URL.")
     lines.append("# TYPE watchdog_uptime_percent gauge")
-    lines.append("# HELP watchdog_avg_response_ms Average response time in milliseconds for each URL.")
+    lines.append(
+        "# HELP watchdog_avg_response_ms Average response time in milliseconds for each URL."
+    )
     lines.append("# TYPE watchdog_avg_response_ms gauge")
-    lines.append("# HELP watchdog_p50_response_ms 50th percentile response time in milliseconds for each URL.")
+    lines.append(
+        "# HELP watchdog_p50_response_ms 50th percentile response time in milliseconds for each URL."
+    )
     lines.append("# TYPE watchdog_p50_response_ms gauge")
-    lines.append("# HELP watchdog_p95_response_ms 95th percentile response time in milliseconds for each URL.")
+    lines.append(
+        "# HELP watchdog_p95_response_ms 95th percentile response time in milliseconds for each URL."
+    )
     lines.append("# TYPE watchdog_p95_response_ms gauge")
-    lines.append("# HELP watchdog_p99_response_ms 99th percentile response time in milliseconds for each URL.")
+    lines.append(
+        "# HELP watchdog_p99_response_ms 99th percentile response time in milliseconds for each URL."
+    )
     lines.append("# TYPE watchdog_p99_response_ms gauge")
-    lines.append("# HELP watchdog_total_checks Total number of checks recorded for each URL.")
+    lines.append(
+        "# HELP watchdog_total_checks Total number of checks recorded for each URL."
+    )
     lines.append("# TYPE watchdog_total_checks counter")
-    lines.append("# HELP watchdog_up_checks Total number of successful checks recorded for each URL.")
+    lines.append(
+        "# HELP watchdog_up_checks Total number of successful checks recorded for each URL."
+    )
     lines.append("# TYPE watchdog_up_checks counter")
 
-    lines.append("# HELP watchdog_last_wave_timestamp_seconds Unix timestamp of the last completed monitoring wave.")
+    lines.append(
+        "# HELP watchdog_last_wave_timestamp_seconds Unix timestamp of the last completed monitoring wave."
+    )
     lines.append("# TYPE watchdog_last_wave_timestamp_seconds gauge")
-    lines.append("# HELP watchdog_wave_duration_seconds Duration of the last monitoring wave in seconds.")
+    lines.append(
+        "# HELP watchdog_wave_duration_seconds Duration of the last monitoring wave in seconds."
+    )
     lines.append("# TYPE watchdog_wave_duration_seconds gauge")
-    lines.append("# HELP watchdog_active_concurrency_limit Current effective concurrency limit used by the monitor.")
+    lines.append(
+        "# HELP watchdog_active_concurrency_limit Current effective concurrency limit used by the monitor."
+    )
     lines.append("# TYPE watchdog_active_concurrency_limit gauge")
 
-    lines.append("# HELP watchdog_slo_uptime_percent SLO uptime percentage per logical service.")
+    lines.append(
+        "# HELP watchdog_slo_uptime_percent SLO uptime percentage per logical service."
+    )
     lines.append("# TYPE watchdog_slo_uptime_percent gauge")
-    lines.append("# HELP watchdog_slo_latency_p95_ms SLO p95 latency in ms per logical service.")
+    lines.append(
+        "# HELP watchdog_slo_latency_p95_ms SLO p95 latency in ms per logical service."
+    )
     lines.append("# TYPE watchdog_slo_latency_p95_ms gauge")
-    lines.append("# HELP watchdog_slo_error_budget_ratio Ratio of error budget consumed per service (0-1).")
+    lines.append(
+        "# HELP watchdog_slo_error_budget_ratio Ratio of error budget consumed per service (0-1)."
+    )
     lines.append("# TYPE watchdog_slo_error_budget_ratio gauge")
 
     for stat in stats:
@@ -796,12 +955,8 @@ async def _metrics_handler(request: web.Request) -> web.Response:
             lines.append(
                 f'watchdog_p99_response_ms{{url="{url_label}"}} {stat.p99_response_time_ms:.6f}'
             )
-        lines.append(
-            f'watchdog_total_checks{{url="{url_label}"}} {stat.total_checks}'
-        )
-        lines.append(
-            f'watchdog_up_checks{{url="{url_label}"}} {stat.up_checks}'
-        )
+        lines.append(f'watchdog_total_checks{{url="{url_label}"}} {stat.total_checks}')
+        lines.append(f'watchdog_up_checks{{url="{url_label}"}} {stat.up_checks}')
 
     # SLO metrics per service.
     for res in slo_results:
@@ -827,9 +982,7 @@ async def _metrics_handler(request: web.Request) -> web.Response:
     if last_wave_ts_str is not None:
         try:
             last_wave_ts = float(last_wave_ts_str)
-            lines.append(
-                f"watchdog_last_wave_timestamp_seconds {last_wave_ts:.6f}"
-            )
+            lines.append(f"watchdog_last_wave_timestamp_seconds {last_wave_ts:.6f}")
         except ValueError:
             logger.warning(
                 "Invalid telemetry value for last_wave_timestamp_seconds: %s",
@@ -838,9 +991,7 @@ async def _metrics_handler(request: web.Request) -> web.Response:
     if last_wave_dur_str is not None:
         try:
             last_wave_dur = float(last_wave_dur_str)
-            lines.append(
-                f"watchdog_wave_duration_seconds {last_wave_dur:.6f}"
-            )
+            lines.append(f"watchdog_wave_duration_seconds {last_wave_dur:.6f}")
         except ValueError:
             logger.warning(
                 "Invalid telemetry value for last_wave_duration_seconds: %s",
@@ -849,9 +1000,7 @@ async def _metrics_handler(request: web.Request) -> web.Response:
     if current_conc_str is not None:
         try:
             current_conc = float(current_conc_str)
-            lines.append(
-                f"watchdog_active_concurrency_limit {current_conc:.0f}"
-            )
+            lines.append(f"watchdog_active_concurrency_limit {current_conc:.0f}")
         except ValueError:
             logger.warning(
                 "Invalid telemetry value for current_concurrency_limit: %s",
@@ -968,6 +1117,11 @@ def main() -> NoReturn:
         help="Run a live TUI dashboard (read-only).",
     )
     group.add_argument(
+        "--send-test-email",
+        action="store_true",
+        help="Send a single SMTP test email using WATCHDOG_SMTP_* settings.",
+    )
+    group.add_argument(
         "--export-csv",
         action="store_true",
         help="Export raw checks to a CSV file (optionally deleting them).",
@@ -976,6 +1130,11 @@ def main() -> NoReturn:
         "--slo-report",
         action="store_true",
         help="Evaluate SLOs over a rolling window and print a compact table.",
+    )
+    group.add_argument(
+        "--validate-config",
+        action="store_true",
+        help="Validate environment/.env and targets configuration and exit.",
     )
     parser.add_argument(
         "--since",
@@ -1033,11 +1192,6 @@ def main() -> NoReturn:
         choices=["asc", "desc"],
         default="asc",
         help="Sort order for incidents (default: asc).",
-    )
-    parser.add_argument(
-        "--validate-config",
-        action="store_true",
-        help="Validate .env and targets.yaml configuration and exit.",
     )
     parser.add_argument(
         "--export-output",
@@ -1133,6 +1287,8 @@ def main() -> NoReturn:
                 asyncio.run(_run_dashboard())
             except KeyboardInterrupt:
                 logger.info("Dashboard interrupted by user, exiting.")
+        elif args.send_test_email:
+            asyncio.run(_run_send_test_email())
         elif args.metrics_server:
             asyncio.run(_run_metrics_server(args.metrics_host, args.metrics_port))
         elif args.ci:
@@ -1184,5 +1340,3 @@ def main() -> NoReturn:
 
 if __name__ == "__main__":
     main()
-
-

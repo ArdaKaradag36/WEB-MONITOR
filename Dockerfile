@@ -36,4 +36,3 @@ ENV WATCHDOG_DB_PATH=/app/data/watchdog.db \
     WATCHDOG_TARGETS_FILE=/app/config/targets.yaml
 
 CMD ["python", "main.py", "--monitor"]
-

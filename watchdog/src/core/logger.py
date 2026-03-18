@@ -6,7 +6,6 @@ from typing import Optional
 from rich.console import Console
 from rich.logging import RichHandler
 
-
 _LOGGER_NAME = "watchdog"
 _console = Console()
 
@@ -50,4 +49,3 @@ def get_logger(name: Optional[str] = None) -> logging.Logger:
 
 
 __all__ = ["configure_logging", "get_logger"]
-

@@ -1,9 +1,7 @@
-import asyncio
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
-
 from src.infrastructure.database import Database
 
 
@@ -17,9 +15,15 @@ async def test_get_summary_stats_and_incidents(tmp_path: Path) -> None:
     # Insert simple pattern: up, down, down, up for a single URL.
     url = "https://example.com"
     await db.insert_check_result(url, 200, 100.0, True, timestamp=now)
-    await db.insert_check_result(url, 500, 120.0, False, timestamp=now + timedelta(seconds=10))
-    await db.insert_check_result(url, 500, 130.0, False, timestamp=now + timedelta(seconds=20))
-    await db.insert_check_result(url, 200, 110.0, True, timestamp=now + timedelta(seconds=30))
+    await db.insert_check_result(
+        url, 500, 120.0, False, timestamp=now + timedelta(seconds=10)
+    )
+    await db.insert_check_result(
+        url, 500, 130.0, False, timestamp=now + timedelta(seconds=20)
+    )
+    await db.insert_check_result(
+        url, 200, 110.0, True, timestamp=now + timedelta(seconds=30)
+    )
 
     stats = await db.get_summary_stats()
     assert len(stats) == 1
@@ -39,4 +43,3 @@ async def test_get_summary_stats_and_incidents(tmp_path: Path) -> None:
     assert inc.ended_at == now + timedelta(seconds=30)
 
     await db.close()
-

@@ -1381,5 +1381,3 @@ targets:
     timeout: 8
     method: "GET"
     latency_threshold_ms: 5000
-
-

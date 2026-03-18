@@ -13,4 +13,3 @@ services:
     url_contains: "tbmm.gov.tr"
     target_uptime_percent: 99.0
     target_p95_ms: 6000
-

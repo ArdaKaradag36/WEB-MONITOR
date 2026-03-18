@@ -78,12 +78,8 @@ def main() -> None:
     print(f"Wrote {len(urls)} targets to {output_path}")
     print()
     print("To run the monitor only for these links, use:")
-    print(
-        "  WATCHDOG_TARGETS_FILE="
-        f"{output_path.as_posix()} python main.py --monitor"
-    )
+    print(f"  WATCHDOG_TARGETS_FILE={output_path.as_posix()} python main.py --monitor")
 
 
 if __name__ == "__main__":
     main()
-

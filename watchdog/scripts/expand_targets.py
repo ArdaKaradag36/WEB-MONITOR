@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+import argparse
+from pathlib import Path
+from typing import Any, List
+
+import yaml
+
 """
 Utility script to synthetically expand a targets YAML file
 to a larger number of entries (e.g. 800–1000) for load testing.
@@ -19,12 +25,6 @@ Then point WATCHDOG_TARGETS_FILE to the expanded file:
   - In docker-compose  : WATCHDOG_TARGETS_FILE: /app/config/targets_public_institutions_expanded.yaml
 """
 
-import argparse
-from pathlib import Path
-from typing import Any, List
-
-import yaml
-
 
 def _load_targets(path: Path) -> List[dict[str, Any]]:
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -41,7 +41,9 @@ def _load_targets(path: Path) -> List[dict[str, Any]]:
 def _write_targets(path: Path, targets: List[dict[str, Any]]) -> None:
     payload = {"targets": targets}
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(yaml.safe_dump(payload, sort_keys=False, allow_unicode=True), encoding="utf-8")
+    path.write_text(
+        yaml.safe_dump(payload, sort_keys=False, allow_unicode=True), encoding="utf-8"
+    )
 
 
 def expand_targets(input_path: Path, output_path: Path, target_count: int) -> None:
@@ -83,9 +85,15 @@ def expand_targets(input_path: Path, output_path: Path, target_count: int) -> No
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Expand a targets YAML file for load testing.")
-    parser.add_argument("--input", type=Path, required=True, help="Input targets YAML path.")
-    parser.add_argument("--output", type=Path, required=True, help="Output expanded YAML path.")
+    parser = argparse.ArgumentParser(
+        description="Expand a targets YAML file for load testing."
+    )
+    parser.add_argument(
+        "--input", type=Path, required=True, help="Input targets YAML path."
+    )
+    parser.add_argument(
+        "--output", type=Path, required=True, help="Output expanded YAML path."
+    )
     parser.add_argument(
         "--target-count",
         type=int,
@@ -99,4 +107,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

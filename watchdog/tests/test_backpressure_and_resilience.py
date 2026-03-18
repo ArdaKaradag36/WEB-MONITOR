@@ -4,11 +4,10 @@ from typing import List
 import aiosqlite
 import pytest
 from aiohttp import ClientSession, web
-
 from src.core.config import AppSettings
 from src.infrastructure.database import Database
-from src.services.monitor import _adjust_concurrency, _check_target
 from src.models.target import Target
+from src.services.monitor import _adjust_concurrency, _check_target
 
 
 class DummySettings(AppSettings):
@@ -55,7 +54,9 @@ def test_adjust_concurrency_behavior(
 
 
 @pytest.mark.asyncio
-async def test_database_locked_is_retried(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_database_locked_is_retried(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """
     Simulate a 'database is locked' scenario and verify that _execute_with_retry
     performs retries instead of failing immediately.
@@ -83,7 +84,9 @@ async def test_database_locked_is_retried(tmp_path: Path, monkeypatch: pytest.Mo
 
 
 @pytest.mark.asyncio
-async def test_check_target_with_invalid_json_body(tmp_path: Path, unused_tcp_port: int) -> None:
+async def test_check_target_with_invalid_json_body(
+    tmp_path: Path, unused_tcp_port: int
+) -> None:
     """
     Run _check_target against a local aiohttp server that returns invalid JSON.
 
@@ -93,7 +96,9 @@ async def test_check_target_with_invalid_json_body(tmp_path: Path, unused_tcp_po
 
     async def handler(_request: web.Request) -> web.Response:
         # Deliberately invalid JSON payload.
-        return web.Response(text="{ this is not valid json", content_type="application/json")
+        return web.Response(
+            text="{ this is not valid json", content_type="application/json"
+        )
 
     app = web.Application()
     app.router.add_get("/bad-json", handler)
@@ -145,4 +150,3 @@ async def test_check_target_with_invalid_json_body(tmp_path: Path, unused_tcp_po
         await db.close()
     finally:
         await runner.cleanup()
-
