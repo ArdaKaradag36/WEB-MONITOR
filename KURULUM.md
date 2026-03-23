@@ -1,141 +1,273 @@
-## WatchDog – Hızlı Kurulum ve İlk Çalıştırma
+## WEB-MONITOR Kurulum Rehberi
 
-Bu dosya, projeyi **en basit şekilde ayağa kaldırmak** için kısa bir rehberdir.
-Detaylı tüm dokümantasyon için `README.md` dosyasına bakabilirsin.
+Bu dokuman, projeyi sifirdan kurup calistirmak, sonra tekrar acmak ve Docker/CI akislarini anlamak icin hazirlandi.
 
 ---
 
-## 1. Gereksinimler
+## 1) Gereksinimler
 
-- Python **3.10+**
+- Python 3.10+
 - Git
-- (İsteğe bağlı) Docker ve Docker Compose
+- (Opsiyonel) Docker + Docker Compose
+
+Linux icin ekstra faydali:
+- `xdg-open` (dashboard'i terminalden acmak icin)
 
 ---
 
-## 2. Kaynağı indir
+## 2) Projeyi cekme
 
 ```bash
 git clone <repo-url> WEB-MONITOR
 cd WEB-MONITOR
 ```
 
-`<repo-url>` yerine kendi Git deposunun HTTPS/SSH adresini yaz.
-
 ---
 
-## 3. Python ile hızlı kurulum
-
-### 3.1 Sanal ortam oluştur ve bağımlılıkları yükle
+## 3) Ilk local kurulum (Python)
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate           # Windows: .venv\Scripts\activate
-
+source .venv/bin/activate
 pip install -r watchdog/requirements.txt
 ```
 
-### 3.2 Basit hedef dosyasını kullanarak monitor’u başlat
-
-Varsayılan, birkaç örnek hedef içeren konfig ile:
+### 3.1 `links.txt` ile monitor baslatma
 
 ```bash
-export WATCHDOG_TARGETS_FILE=watchdog/config/targets.yaml
+cd /home/arda/software/WEB-MONITOR
+source .venv/bin/activate
+
+export WATCHDOG_TARGETS_FILE=watchdog/links.txt
 export WATCHDOG_DB_PATH=watchdog.db
 
 python watchdog/main.py --monitor
 ```
 
-Terminalde periyodik health check loglarını görmelisin.
+> Bu terminal acik kalir; monitor burada calisir.
 
-### 3.2.1 (Opsiyonel) Email uyarılarını aç (SMTP)
+### 3.2 Dashboard API baslatma
 
-Email uyarıları için minimum şu değişkenler gerekli:
-
-- `WATCHDOG_SMTP_HOST`
-- `WATCHDOG_SMTP_FROM`
-- `WATCHDOG_SMTP_TO`
-
-Örnek (Gmail / App Password ile):
+`src` import yolu nedeniyle bu komut `watchdog/` klasoru icinden calismalidir:
 
 ```bash
-export WATCHDOG_SMTP_HOST=smtp.gmail.com
-export WATCHDOG_SMTP_PORT=587
-export WATCHDOG_SMTP_USERNAME="karadagarda06@gmail.com"
-export WATCHDOG_SMTP_PASSWORD="<gmail-app-password>"
-export WATCHDOG_SMTP_FROM="karadagarda06@gmail.com"
-export WATCHDOG_SMTP_TO="karadagarda06@gmail.com"
+cd /home/arda/software/WEB-MONITOR/watchdog
+source /home/arda/software/WEB-MONITOR/.venv/bin/activate
+
+export WATCHDOG_TARGETS_FILE=/home/arda/software/WEB-MONITOR/watchdog/links.txt
+export WATCHDOG_DB_PATH=/home/arda/software/WEB-MONITOR/watchdog.db
+
+uvicorn src.api.app:app --host 0.0.0.0 --port 8001
 ```
 
-Notlar:
-
-- Email uyarıları **varsayılan kapalıdır**; SMTP bilgileri verilmeden mail gönderimi yapılmaz.
-- SMTP ayarlarını hızlı test etmek için:
+Tarayici:
 
 ```bash
-python watchdog/main.py --send-test-email
+xdg-open http://localhost:8001
 ```
-
-### 3.3 İlk raporu almak
-
-Bir süre çalıştıktan sonra (örneğin birkaç dakika), yeni bir terminal aç:
-
-```bash
-cd WEB-MONITOR
-source .venv/bin/activate           # Windows: .venv\Scripts\activate
-
-python watchdog/main.py --report --last-hours 1
-```
-
-Son 1 saatin uptime/latency özet tablosu yazdırılır.
 
 ---
 
-## 4. Docker ile çalıştırma (tek komut)
+## 4) Sonradan tekrar calistirma (guncel kullanim)
 
-Docker ve Docker Compose yüklüyse:
+Projeyi daha once kurduysan:
 
+### Terminal-1
 ```bash
-cd WEB-MONITOR
-docker compose up -d --build
+cd /home/arda/software/WEB-MONITOR
+source .venv/bin/activate
+export WATCHDOG_TARGETS_FILE=watchdog/links.txt
+export WATCHDOG_DB_PATH=watchdog.db
+python watchdog/main.py --monitor
 ```
 
-Beklenen servisler:
+### Terminal-2
+```bash
+cd /home/arda/software/WEB-MONITOR/watchdog
+source /home/arda/software/WEB-MONITOR/.venv/bin/activate
+export WATCHDOG_TARGETS_FILE=/home/arda/software/WEB-MONITOR/watchdog/links.txt
+export WATCHDOG_DB_PATH=/home/arda/software/WEB-MONITOR/watchdog.db
+uvicorn src.api.app:app --host 0.0.0.0 --port 8001
+```
 
+Dashboard:
+- `http://localhost:8001`
+
+---
+
+## 5) Temel komutlar
+
+Repo root'tan:
+
+```bash
+python watchdog/main.py --validate-config
+python watchdog/main.py --report --last-hours 1
+python watchdog/main.py --status --last-minutes 5
+python watchdog/main.py --incidents --last-hours 24
+python watchdog/main.py --slo-report --last-hours 24
+```
+
+Metrics server (tek basina):
+
+```bash
+python watchdog/main.py --metrics-server --metrics-host 0.0.0.0 --metrics-port 9100
+```
+
+---
+
+## 6) Docker ile calistirma
+
+```bash
+cd /home/arda/software/WEB-MONITOR
+docker compose up -d --build
+docker compose ps
+```
+
+Beklenen:
 - `watchdog-monitor`
 - `watchdog-metrics`
 - `watchdog-nginx`
 
-Durumu kontrol etmek için:
-
-```bash
-docker compose ps
-```
-
-Health ve metrics endpoint’leri:
+Kontrol:
 
 ```bash
 curl -s http://localhost:8080/health
-# Not: /metrics endpoint'i Nginx tarafında Basic Auth ile korunur.
-# Kullanıcı/parola için README'deki htpasswd adımına bakın.
-curl -s -u prometheus:<parola> http://localhost:8080/metrics | head -40
 ```
 
-Stack’i durdurmak için:
+Kapatma:
 
 ```bash
 docker compose down
 ```
 
----
-
-## 5. En basit hedef dosyasıyla denemek (opsiyonel)
-
-Tek bir endpoint’i izlemek için minimal konfig:
+Log inceleme:
 
 ```bash
-export WATCHDOG_TARGETS_FILE=watchdog/config/targets_minimal.yaml
-python watchdog/main.py --monitor
+docker compose logs -f watchdog-monitor
+docker compose logs -f watchdog-metrics
+docker compose logs -f nginx
 ```
 
-Bu dosya, `https://example.com/health` için basit bir health check içerir.
+---
+
+## 7) Environment degiskenleri
+
+En cok kullanilanlar:
+
+- `WATCHDOG_TARGETS_FILE`
+- `WATCHDOG_DB_PATH`
+- `WATCHDOG_POLL_INTERVAL_SECONDS`
+- `WATCHDOG_REQUEST_TIMEOUT_SECONDS`
+- `WATCHDOG_MAX_CONCURRENT_REQUESTS`
+- `WATCHDOG_MAX_RETRIES`
+- `WATCHDOG_ALLOW_PRIVATE_IPS`
+- `WATCHDOG_SLACK_WEBHOOK_URL`
+- `WATCHDOG_SMTP_*`
+- `WATCHDOG_CI_CRITICAL_SERVICES_FILE`
+- `WATCHDOG_MAINTENANCE_WINDOWS_FILE`
+
+Ornek:
+
+```bash
+export WATCHDOG_TARGETS_FILE=watchdog/links.txt
+export WATCHDOG_DB_PATH=watchdog.db
+export WATCHDOG_POLL_INTERVAL_SECONDS=60
+export WATCHDOG_REQUEST_TIMEOUT_SECONDS=5
+```
+
+---
+
+## 8) SMTP / Slack notifier (opsiyonel)
+
+SMTP ornegi:
+
+```bash
+export WATCHDOG_SMTP_HOST=smtp.gmail.com
+export WATCHDOG_SMTP_PORT=587
+export WATCHDOG_SMTP_USERNAME="<smtp-username>"
+export WATCHDOG_SMTP_PASSWORD="<smtp-password-or-app-password>"
+export WATCHDOG_SMTP_FROM="noreply@example.com"
+export WATCHDOG_SMTP_TO="ops@example.com"
+```
+
+Slack:
+
+```bash
+export WATCHDOG_SLACK_WEBHOOK_URL="https://hooks.slack.com/services/XXXX/XXXX/XXXX"
+```
+
+Test mail:
+
+```bash
+python watchdog/main.py --send-test-email
+```
+
+---
+
+## 9) CI / GitHub Actions
+
+Pipeline dosyasi: `.github/workflows/ci.yml`
+
+Calisan kontroller:
+- gitleaks secret scan
+- ruff lint
+- ruff format check
+- pytest
+- compile check
+
+Local'de CI benzeri calistirma:
+
+```bash
+source .venv/bin/activate
+ruff check .
+ruff format --check .
+pytest watchdog
+python -m compileall watchdog/src
+```
+
+---
+
+## 10) `.gitignore` kontrolu
+
+Repoda asagidaki kritik ignore kurallari zaten mevcut:
+
+- `.venv/`, `venv/`, `env/`
+- `.env`, `.env.*`
+- `*.db`, `*.db-shm`, `*.db-wal`
+- `*.log`
+- `__pycache__/`, `.pytest_cache/`
+
+Bu sayede local secret, DB ve log dosyalari commit'e girmez.
+
+---
+
+## 11) Sik karsilasilan hata ve cozum
+
+### Hata: `ModuleNotFoundError: No module named 'src'`
+
+Neden:
+- API komutunu repo root'tan `uvicorn watchdog.src.api.app:app` ile calistirmak.
+
+Cozum:
+- `watchdog/` klasorune girip `uvicorn src.api.app:app` calistir.
+
+### Hata: Dashboard aciliyor ama veri yok
+
+Kontrol:
+- `--monitor` ayri terminalde calisiyor mu?
+- `WATCHDOG_DB_PATH` monitor ve API tarafinda ayni mi?
+- `WATCHDOG_TARGETS_FILE` dogru dosyaya mi isaret ediyor?
+
+---
+
+## 12) Hedef dosya secenekleri
+
+- `watchdog/links.txt` (satir basina URL)
+- `watchdog/config/targets.yaml` (YAML)
+- `watchdog/config/targets_public_institutions.yaml`
+- `watchdog/config/targets_public_institutions_expanded.yaml`
+- `watchdog/config/targets_chaos.yaml`
+
+---
+
+Bu dosya hizli uygulama odakli tutuldu. Mimari ve proje tanitimi icin `README.md` dosyasina gec.
