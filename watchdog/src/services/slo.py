@@ -109,10 +109,8 @@ async def compute_slo_results(
 
     results: list[SloResult] = []
     for svc in config.services:
-        # Hizmet URL'lerini substring ile eşle.
         matching = [s for s in stats if svc.url_contains in s.url]
         if not matching:
-            # Hiç eşleşme yoksa, 0 uptime / 0 latency ile FAIL say.
             results.append(
                 SloResult(
                     service=svc.name,
@@ -125,9 +123,9 @@ async def compute_slo_results(
             )
             continue
 
-        # Uptime ve p95'in basit ortalaması (tüm URL'ler eşit ağırlıklı).
+        # Simple average across all matching URLs (equal weight per endpoint).
         uptime = sum(s.uptime_percentage for s in matching) / len(matching)
-        # Bazı URL'lerde p95 olmayabilir (None) – sadece mevcut değerleri al.
+        # Exclude URLs with no p95 sample yet; avoids skewing the aggregate.
         p95_values = [
             s.p95_response_time_ms
             for s in matching

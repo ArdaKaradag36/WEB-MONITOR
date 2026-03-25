@@ -1,229 +1,180 @@
-# WEB-MONITOR (WatchDog)
+# WEB-MONITOR
 
-NVI bünyesinde staj sürecimde geliştirdiğim bu proje, kamu ve özel web servislerini merkezi olarak izlemek için tasarlanmış self-hosted bir web monitor uygulamasıdır. Sistem; hedef URL'leri periyodik olarak kontrol eder, uptime/latency verilerini kaydeder, kesinti anlarını incident olarak raporlar ve hem API hem dashboard hem de Prometheus metrikleri üzerinden operasyon ekiplerine görünürlük sağlar.
-
-## Portföy Özeti
-
-Bu projeyi tek başıma, üretim mantığına yakın bir yaklaşımla geliştirdim: asenkron izleme motoru, SQLite tabanlı veri katmanı, FastAPI ile dashboard API'si, Docker tabanlı çalıştırma ve GitHub Actions ile kalite kontrol adımlarını tek bir sistemde topladım. Amacım, kurum içi veya internet üzeri kritik servislerin kesinti ve performans problemlerini erken tespit edebilen, düşük maliyetli ve özelleştirilebilir bir monitoring çözümü oluşturmaktı.
-
-## Proje Görseli
-
-![Web Monitor Dashboard](images/image1.png)
+Self-hosted, asenkron HTTP/HTTPS izleme platformu.
 
 ---
 
-## Hangi problemi çözer?
+## Proje Amacı
 
-- Dağınık servislerin merkezi izlenmesi
-- Kesinti anlarının otomatik tespiti ve kaydı
-- Sadece "up/down" değil, gecikme bazlı kalite takibi
-- CI ve operasyon akışlarında SLO odaklı kontrol
-- Küçük ekipler için self-hosted ve düşük maliyetli monitor altyapısı
+WEB-MONITOR, kamu ve kurumsal web servislerini merkezi olarak izlemek için
+tasarlanmış hafif, self-hosted bir uptime ve performans monitörüdür. Sistem;
+hedef URL'leri periyodik olarak kontrol eder, uptime/gecikme verilerini
+kaydeder, kesintileri incident olarak raporlar ve operasyon ekiplerine hem
+bir dashboard hem Prometheus metrikleri hem de CLI aracılığıyla görünürlük
+sağlar.
 
-## Hedef Kitle
+Ek bir izleme servisi, veritabanı sunucusu veya bulut hesabı gerektirmez.
+Tek bir Python ortamı veya Docker Compose ile çalışır.
 
-- Bireysel geliştiriciler
-- KOBİ teknik ekipleri
-- DevOps / SRE mühendisleri
-- Kurum içi NOC ve sistem yönetimi ekipleri
+---
+
+## Kapsam & Hedef
+
+**Kimler kullanabilir?**
+
+- Sunucularını veya API'lerini takip etmek isteyen bireysel geliştiriciler
+- Düşük maliyetli, kendi sunucularında çalışan bir monitor isteyen KOBİ teknik ekipleri
+- CI/CD pipeline'larına SLO bazlı sağlık kontrolü eklemek isteyen DevOps ve SRE mühendisleri
+- Kurumsal NOC ve sistem yönetimi ekipleri
+
+**Ne için kullanılır?**
+
+- Dağınık servislerin tek bir noktadan izlenmesi
+- Yalnızca "up/down" değil, gecikme bazlı kalite takibi (p50/p95/p99)
+- SLO tanımları ve error budget izleme
+- Slack, e-posta, webhook veya PagerDuty üzerinden otomatik bildirim
+- GitHub Actions veya benzer CI sistemlerine entegre sağlık kapısı
+
+---
+
+## Dashboard
+
+![WatchDog NOC Dashboard](images/image1.png)
 
 ---
 
 ## Teknoloji Yığını
 
-### Backend / Core
-- Python 3.10+
-- asyncio + aiohttp (asenkron check motoru)
-- FastAPI + Uvicorn (dashboard API)
-
-### Data / Storage
-- SQLite (WAL modu)
-- aiosqlite
-
-### Frontend
-- HTML + CSS + Vanilla JavaScript (statik dashboard)
-
-### DevOps / Operasyon
-- Docker + Docker Compose
-- Nginx reverse proxy (metrics/health proxy ve auth)
-- GitHub Actions (CI)
-- Ruff + Pytest + Compile check + Gitleaks
+| Katman | Teknoloji |
+|--------|-----------|
+| Monitor Motoru | Python 3.10+, asyncio, aiohttp |
+| API | FastAPI, Uvicorn |
+| Veritabanı | SQLite (WAL modu), aiosqlite |
+| Frontend | HTML + CSS + Vanilla JavaScript |
+| Reverse Proxy | Nginx |
+| Containerization | Docker, Docker Compose |
+| CI/CD | GitHub Actions |
+| Kod Kalitesi | Ruff, Pytest, Gitleaks |
 
 ---
 
-## Mimari Özet
+## Mimari
 
-1. Hedef listesi (`targets.yaml` veya `links.txt`) yüklenir.
-2. Monitor worker asenkron dalgalar halinde HTTP kontrolü yapar.
-3. Sonuçlar SQLite veritabanına yazılır.
-4. Incident ve durum bilgileri API ve CLI tarafında kullanılır.
-5. Dashboard API'den veri çekerek son durumu gösterir.
-6. Prometheus `/metrics` endpoint'i metrikleri dış sistemlere açar.
-
-Kısa akış:
-
-`Targets -> Async Runner -> SQLite -> API/CLI/Metrics -> Dashboard`
+```
+Targets YAML / TXT
+      │
+      ▼
+ Async Monitor Loop         ← asyncio + aiohttp + SSRF Guard
+      │
+      ▼
+  SQLite (WAL)
+      │
+      ├─── FastAPI Dashboard API    → /api/status, /api/incidents, /api/slo
+      ├─── Prometheus Metrics       → /metrics
+      └─── CLI / TUI                → --report, --incidents, --slo-report
+```
 
 ---
 
 ## Özellikler
 
-- Asenkron monitor loop (yüksek hedef sayısında stabil çalışma)
-- Retry + jitter + timeout guardrail'leri
-- AIMD backpressure ile adaptif concurrency
-- Incident raporlama (down/resolved)
-- SLO raporu (`--slo-report`)
-- Config doğrulama (`--validate-config`)
-- Profil bazlı hedef dosyası desteği
-- Slack / SMTP / Webhook / PagerDuty notifier desteği
-- Dockerized çalıştırma ve CI pipeline
+- Asenkron monitor döngüsü — binlerce hedefte kararlı çalışma
+- AIMD backpressure ile adaptif eş zamanlılık kontrolü
+- SSRF koruması — DNS çözümleme ve özel IP filtresi
+- Yanıt gövdesi boyutu sınırı (50 KB) — OOM koruması
+- TLS sertifika süresi kontrolü — hedef bazında yapılandırılabilir
+- Bakım penceresi desteği — aktif bakım sırasında uyarı baskılama
+- Global circuit breaker — ağ kesintilerinde uyarı fırtınasını önler
+- Retry + jitter + timeout cap — geçici hataları tolere eder
+- Incident raporlama — DOWN/RESOLVED geçiş takibi
+- SLO değerlendirme — PASS / PARTIAL / FAIL
+- Bildirim: Slack, SMTP, Generic Webhook, PagerDuty Events v2
+- Prometheus `/metrics` — p50/p95/p99, uptime, telemetri
+- Docker Compose dağıtımı — Nginx Basic Auth ile korunan metrics endpoint
+- CI modu — SLO'ya göre exit code; pipeline entegrasyonu
 
 ---
 
-## Hemen Başla
+## Yol Haritası / Durum
 
-Detaylı kurulum için `KURULUM.md` dosyasına bak.
+| Özellik | Durum | Notlar |
+|---------|-------|--------|
+| Asenkron HTTP/HTTPS izleme | ✅ Tamamlandı | AIMD backpressure dahil |
+| SSRF ve güvenlik kontrolleri | ✅ Tamamlandı | DNS + IP filtresi, port deny-list |
+| SQLite veri katmanı | ✅ Tamamlandı | WAL modu, retry, percentile hesaplama |
+| FastAPI dashboard API | ✅ Tamamlandı | /api/status, /api/incidents, /api/slo, /api/config |
+| Web UI (NOC dashboard) | ✅ Tamamlandı | Vanilla JS, mobil uyumlu |
+| Prometheus metrikleri | ✅ Tamamlandı | p50/p95/p99, uptime, wave telemetri |
+| Incident raporlama | ✅ Tamamlandı | DOWN→UP geçiş bazlı |
+| SLO raporu | ✅ Tamamlandı | PASS/PARTIAL/FAIL, API + CLI |
+| TLS sertifika süresi kontrolü | ✅ Tamamlandı | Hedef bazında `tls_days_before_expiry_warning` |
+| Bakım penceresi | ✅ Tamamlandı | YAML tabanlı, UTC zaman dilimi |
+| Slack bildirimi | ✅ Tamamlandı | Exponential backoff ile retry |
+| SMTP e-posta bildirimi | ✅ Tamamlandı | STARTTLS destekli |
+| Generic webhook bildirimi | ✅ Tamamlandı | JSON payload |
+| PagerDuty bildirimi | ✅ Tamamlandı | Events v2 API |
+| Docker Compose dağıtımı | ✅ Tamamlandı | Multi-stage build, Nginx |
+| GitHub Actions CI | ✅ Tamamlandı | Gitleaks, Ruff, Pytest, compileall |
+| Profil bazlı hedef seçimi | ✅ Tamamlandı | `WATCHDOG_PROFILE` ile |
+| TCP / ICMP / DNS probe | ⬜ Planlanmadı | Yalnızca HTTP/HTTPS destekleniyor |
+| Çok bölgeli (multi-region) izleme | ⬜ Planlanmadı | Birden fazla deployment ile sağlanabilir |
 
-Opsiyonel olarak `.env.example` dosyasını kopyalayıp kendi ortamına göre doldurabilirsin:
+---
+
+## Hızlı Başlangıç
+
+Detaylı kurulum ve yapılandırma için [`START.md`](START.md) dosyasına bakın.
 
 ```bash
 cp .env.example .env
-```
-
-En hızlı local demo:
-
-```bash
-cd /home/arda/software/WEB-MONITOR
-python -m venv .venv
-source .venv/bin/activate
-pip install -r watchdog/requirements.txt
-
-export WATCHDOG_TARGETS_FILE=watchdog/links.txt
-export WATCHDOG_DB_PATH=watchdog.db
-
-python watchdog/main.py --monitor
-```
-
-Ayrıca dashboard API:
-
-```bash
-cd /home/arda/software/WEB-MONITOR/watchdog
-source /home/arda/software/WEB-MONITOR/.venv/bin/activate
-uvicorn src.api.app:app --host 0.0.0.0 --port 8001
-```
-
-Tarayıcı:
-
-`http://localhost:8001`
-
----
-
-## `links.txt` ile kullanma
-
-Bu projede plain text URL listesi doğrudan desteklenir.
-
-Örnek:
-
-```text
-https://example.com
-https://www.turkiye.gov.tr
-https://www.google.com
-```
-
-Çalıştırma:
-
-```bash
-export WATCHDOG_TARGETS_FILE=watchdog/links.txt
-python watchdog/main.py --monitor
-```
-
-İstersen `links.txt` dosyasını YAML hedef formatına çevirmek için:
-
-```bash
-python watchdog/scripts/links_to_targets.py \
-  --links-file watchdog/links.txt \
-  --output-file watchdog/config/targets_links.yaml
-```
-
----
-
-## Docker ile Çalıştırma
-
-```bash
-cd /home/arda/software/WEB-MONITOR
 docker compose up -d --build
-docker compose ps
-```
-
-Servisler:
-- `watchdog-monitor`
-- `watchdog-metrics`
-- `watchdog-nginx`
-
-Kontrol:
-
-```bash
 curl -s http://localhost:8080/health
 ```
 
-Kapatma:
+Dashboard:
 
-```bash
-docker compose down
 ```
-
----
-
-## CI (GitHub Actions)
-
-`.github/workflows/ci.yml` içinde iki job vardır:
-
-1. `secrets`: gitleaks ile secret scan
-2. `test`: Python matrix üzerinde lint, format-check, test, compile check
-
-Çalışan adımlar:
-- `ruff check .`
-- `ruff format --check .`
-- `pytest watchdog`
-- `python -m compileall watchdog/src`
+http://localhost:8001
+```
 
 ---
 
 ## Güvenlik Notları
 
-- `.env` ve `.env.*` dosyaları git'e dahil edilmez.
-- SMTP, Slack vb. bilgiler environment değişkeni olarak verilir.
-- Varsayılan SSRF korumaları aktiftir (private IP engeli).
-- Metrics endpoint'ini production ortamında auth/network policy ile koru.
-- Detaylı teknik notlar: `watchdog/docs/OPERASYON_VE_MIMARI_NOTLARI.md`
+- `.env` ve `.env.*` dosyaları git tarafından izlenmez.
+- SMTP, Slack, webhook kimlik bilgileri yalnızca ortam değişkenleri
+  üzerinden tanımlanmalıdır.
+- SSRF koruması varsayılan olarak aktiftir; özel IP adresleri engellenir.
+- `/metrics` endpoint'i üretim ortamında Nginx Basic Auth veya network
+  policy ile korunmalıdır.
+- Ayrıntılı teknik ve operasyon notları için:
+  [`watchdog/docs/OPERASYON_VE_MIMARI_NOTLARI.md`](watchdog/docs/OPERASYON_VE_MIMARI_NOTLARI.md)
 
 ---
 
 ## Proje Yapısı
 
-```text
-WEB-MONITOR/
-├─ watchdog/
-│  ├─ main.py
-│  ├─ links.txt
-│  ├─ config/
-│  ├─ src/
-│  │  ├─ api/
-│  │  ├─ core/
-│  │  ├─ infrastructure/
-│  │  ├─ models/
-│  │  └─ services/
-│  └─ tests/
-├─ docker-compose.yml
-├─ KURULUM.md
-├─ README.md
-└─ images/
 ```
-
----
-
-## Geliştirici
-
-**Arda Karadağ**
-
-T.C. İÇİŞLERİ BAKANLIĞI NÜFUS VE VATANDAŞLIK İŞLERİ GENEL MÜDÜRLÜĞÜ (BVYS-YAZILIM GELİŞTİRME) BÜNYESİNDE STAJ ÇALIŞMASINDA GELİŞTİRİLMİŞTİR.
+WEB-MONITOR/
+├── .github/workflows/       # CI pipeline (GitHub Actions)
+├── images/                  # Belge görselleri
+├── nginx/                   # Nginx yapılandırması ve htpasswd şablonu
+├── scripts/                 # Yardımcı shell scriptleri
+├── watchdog/
+│   ├── main.py              # CLI giriş noktası
+│   ├── links.txt            # Örnek düz metin URL listesi
+│   ├── config/              # YAML hedef, SLO ve bakım penceresi dosyaları
+│   ├── docs/                # Teknik referans belgeleri
+│   ├── scripts/             # Hedef dosyası oluşturma yardımcıları
+│   ├── src/
+│   │   ├── api/             # FastAPI uygulaması ve dashboard
+│   │   ├── core/            # Yapılandırma ve loglama
+│   │   ├── infrastructure/  # Veritabanı ve notifier katmanı
+│   │   ├── models/          # Pydantic veri modelleri
+│   │   └── services/        # Monitor ve SLO servisleri
+│   └── tests/               # Pytest test paketi
+├── .env.example             # Örnek ortam değişkenleri
+├── docker-compose.yml
+├── Dockerfile
+└── START.md                 # Kurulum ve kullanım rehberi
+```

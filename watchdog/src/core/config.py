@@ -1,5 +1,14 @@
 from __future__ import annotations
 
+# UYARI: AppSettings içindeki zaman tabanlı parametreleri (timeout / poll_interval)
+# değiştirmeden önce _validate_time_relationships doğrulayıcısını ve
+# docs/OPERASYON_VE_MIMARI_NOTLARI.md belgesini mutlaka inceleyin.
+# Yanlış yapılandırma üretim ortamında izleme dalgası çakışmalarına yol açar.
+#
+# WARNING: Before modifying the time-based parameters in AppSettings
+# (request_timeout_seconds / poll_interval_seconds), review the
+# _validate_time_relationships validator and the operations documentation.
+# Incorrect values will cause monitoring wave overlaps in production.
 import os
 from pathlib import Path
 from typing import List, Optional
@@ -243,16 +252,12 @@ def load_settings() -> AppSettings:
     """
     profile = os.getenv("WATCHDOG_PROFILE")
 
-    # Her zaman temel .env dosyasını yükle.
     load_dotenv()
-    # Profil tanımlıysa, .env.{profile} ile üzerine yaz.
     if profile:
         load_dotenv(f".env.{profile}")
 
     settings: AppSettings = AppSettings()  # type: ignore[call-arg]
 
-    # Profil tanımlı ve özel bir WATCHDOG_TARGETS_FILE env değişkeni yoksa,
-    # targets_{profile}.yaml dosyasını varsayılan olarak kullan.
     if profile and not os.getenv("WATCHDOG_TARGETS_FILE"):
         settings.targets_file = Path(f"config/targets_{profile}.yaml")
 

@@ -1,5 +1,14 @@
 from __future__ import annotations
 
+# NOT: Bu modüldeki SSRF koruma mantığını (allow_private_ips, denied_ports) veya
+# backpressure eşik değerlerini (HIGH_FAILURE_THRESHOLD, BATCH_SIZE) değiştirmeden
+# önce ilgili test dosyalarını çalıştırın ve docs/OPERASYON_VE_MIMARI_NOTLARI.md
+# belgesini gözden geçirin. Bu parametreler üretim güvenliğini doğrudan etkiler.
+#
+# NOTE: Before modifying the SSRF protection logic (allow_private_ips, denied_ports)
+# or the backpressure threshold constants (HIGH_FAILURE_THRESHOLD, BATCH_SIZE),
+# run the associated test suite and review docs/OPERASYON_VE_MIMARI_NOTLARI.md.
+# These values directly affect production security and monitoring stability.
 import asyncio
 import ipaddress
 import json
